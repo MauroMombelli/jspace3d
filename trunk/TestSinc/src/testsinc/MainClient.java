@@ -13,6 +13,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.vecmath.Vector3d;
+import org.lwjgl.LWJGLUtil;
 import testsinc.net.SyncObjectStream;
 import testsinc.net.client.ClientSelector;
 import testsinc.net.shared.autentication.Login;
@@ -27,7 +28,7 @@ import testsinc.utils.SHA1Calculator;
 public class MainClient {
 
     SyncObjectStream serverStream;
-/*
+
     //Carica le native di lwjgl
     static {
 
@@ -35,9 +36,8 @@ public class MainClient {
         System.setProperty("org.lwjgl.librarypath", new File(new File(System.getProperty("user.dir"), "lib" + File.separator + "lwjgl-2.7.1" + File.separator + "native"), LWJGLUtil.getPlatformName()).getAbsolutePath());
 
     }
-*/
+
     public static void main(String args[]){
-        Vector3d vector;
         MainClient client = new MainClient();
 
         System.out.println("Starting connection");
