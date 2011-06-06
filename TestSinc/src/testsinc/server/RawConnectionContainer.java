@@ -73,6 +73,7 @@ public class RawConnectionContainer extends ConnectionInfoContainer {
     }
 
     public void update() {
+        
         ConnectionInfo clientArray[];
         synchronized (clients) {
             clientArray = clients.values().toArray(new ConnectionInfo[0]);
@@ -88,5 +89,11 @@ public class RawConnectionContainer extends ConnectionInfoContainer {
         synchronized (clients) {
             clients.remove(id);
         }
+    }
+
+    public HashMap<Login, ConnectionInfo> getAndClearWaitingUser(){
+        HashMap<Login, ConnectionInfo> temp = waitingUser;
+        waitingUser = new HashMap<Login, ConnectionInfo>();
+        return temp;
     }
 }
