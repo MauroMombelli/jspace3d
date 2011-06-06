@@ -118,7 +118,7 @@ public class ServerSelector implements Runnable {
         ConnectionInfo byteStream = new ConnectionInfo(clientKey, socketChannel, loginByteSize);
         clientKey.attach(byteStream);
         streamContainer.addClient(byteStream);
-        System.out.println("Acceptated connection from socket:" + socketChannel.socket().getRemoteSocketAddress());
+        System.out.println("Acceptated connection from socket:" + socketChannel.socket().getRemoteSocketAddress()+" max input buffer: "+socketChannel.socket().getReceiveBufferSize()+" max output buffer"+socketChannel.socket().getSendBufferSize());
         return byteStream;
     }
 

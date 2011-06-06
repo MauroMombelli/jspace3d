@@ -6,6 +6,7 @@
 package testsinc.net.server;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -17,7 +18,8 @@ public class ConnectionInfoContainer {
 
     long actualID=0;
     protected final TreeMap<ID, ConnectionInfo> clients = new TreeMap<ID, ConnectionInfo>();
-    
+ //   protected final Set<Map.Entry<ID, ConnectionInfo>> clientMapSet = clients.entrySet();
+
     private AtomicBoolean listening = new AtomicBoolean(true);
 
     private ID getNewID(){
@@ -34,19 +36,20 @@ public class ConnectionInfoContainer {
         if (obj!=null){
             
             synchronized (clients){
-                obj.id =getNewID();
-                clients.put(obj.id, obj);
-                return obj.id;
+                ID id = getNewID();
+                clients.put(id, obj);
+                return id;
             }
         }
         return null;
     }
 
-    public void removeAndCloseClient(ConnectionInfo client) {
+    public void removeAndCloseClient(ID id) {
+
         synchronized (clients){
             System.out.println("ConnectionInfoContainer closing client");
+            ConnectionInfo client = clients.remove(id);
             client.close();
-            clients.remove(client.id);
         }
     }
 
@@ -70,17 +73,14 @@ public class ConnectionInfoContainer {
         }
     }
 
-    public ArrayList<IDandObject> readAll() {
-        ArrayList<IDandObject> readed = new ArrayList<IDandObject>();
-        ConnectionInfo stream[] = new ConnectionInfo[clients.size()];
-        synchronized (clients){
-            clients.values().toArray(stream);
-        }
+    public ArrayList<IDandObject> readAll() {    
         ArrayList<Object> temp;
-        for (int i=0;i < stream.length; i++){
-            temp = stream[i].readAndClearAll();
+        ArrayList<IDandObject> readed=new ArrayList<IDandObject>();
+
+        for (Map.Entry<ID, ConnectionInfo> stream:clients.entrySet()){
+            temp = stream.getValue().readAndClearAll();
             if (temp.size()>0)
-                readed.add( new IDandObject(stream[i].id, temp));
+                readed.add( new IDandObject(stream.getKey(), temp));
         }
         return readed;
     }

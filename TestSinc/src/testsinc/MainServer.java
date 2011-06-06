@@ -6,14 +6,14 @@
 package testsinc;
 
 import Test.server.physic.EnginePhysic;
-import java.net.ConnectException;
-import java.util.ArrayList;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import testsinc.net.server.IDandObject;
+
 import testsinc.net.server.ServerSelector;
-import testsinc.net.server.ConnectionInfoContainer;
+
 import testsinc.server.RawConnectionContainer;
+import testsinc.server.UserContainer;
 
 /**
  *
@@ -21,7 +21,10 @@ import testsinc.server.RawConnectionContainer;
  */
 public class MainServer {
     RawConnectionContainer connectionContainer;
+    UserContainer usersEngine = new UserContainer();
+
     EnginePhysic physic = new EnginePhysic();
+
 
     public static void main(String args[]){
         MainServer server = new MainServer();
@@ -52,6 +55,10 @@ public class MainServer {
     private void run() {
         while (connectionContainer.isListening()){
             connectionContainer.update();
+
+            usersEngine.addAll( connectionContainer.getAndClearWaitingUser() );
+            usersEngine.update();
+            
             try {
                 Thread.sleep(50);
             } catch (InterruptedException ex) {

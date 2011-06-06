@@ -9,7 +9,7 @@ import testsinc.net.shared.autentication.Seed;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Calendar;
-import java.util.Date;
+
 import java.util.concurrent.atomic.AtomicLong;
 import testsinc.net.SyncObjectStream;
 
@@ -19,7 +19,6 @@ import testsinc.net.SyncObjectStream;
  */
 public class ConnectionInfo extends SyncObjectStream{
 
-    public ID id;
     private AtomicLong lastReceivedData = new AtomicLong( Calendar.getInstance().getTimeInMillis() );
     private Seed passSeed;
 /*
