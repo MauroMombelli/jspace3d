@@ -16,5 +16,13 @@ import testsinc.net.shared.autentication.Login;
 public class UserContainer {
     HashMap<Login, ConnectionInfo> users = new HashMap<Login, ConnectionInfo>();
 
-    
+    public void addUser(Login name, ConnectionInfo conn){
+        if (!users.containsKey(name)){
+            users.put(name, conn);
+        }else{
+            //utente già presente!
+            users.get(name).close();
+            users.put(name, conn);
+        }
+    }
 }
