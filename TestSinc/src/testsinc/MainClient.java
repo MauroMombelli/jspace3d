@@ -33,6 +33,10 @@ public class MainClient {
     static {
         File lwjglNativeFolder = new File(System.getProperty("user.dir"), "lib" + File.separator + "lwjgl-2.7.1" + File.separator + "native");
         File thisSoNativeFolder = new File(lwjglNativeFolder, LWJGLUtil.getPlatformName());
+        //LWJGLUtil.getPlatform()
+
+        System.out.println(System.getProperties());
+
         System.out.println( "Loading native library from: " + thisSoNativeFolder.getAbsolutePath() );
         System.setProperty( "org.lwjgl.librarypath", thisSoNativeFolder.getAbsolutePath() );
 
