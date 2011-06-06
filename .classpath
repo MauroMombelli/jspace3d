@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="TestSinc/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="TestSinc/lib/vecmath/vecmath.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/jbullet-20101010.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/lwjgl-2.7.1/jar/AppleJavaExtensions.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/lwjgl-2.7.1/jar/jinput.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/lwjgl-2.7.1/jar/lwjgl_test.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/lwjgl-2.7.1/jar/lwjgl_util_applet.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/lwjgl-2.7.1/jar/lwjgl_util.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/lwjgl-2.7.1/jar/lwjgl-debug.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/lwjgl-2.7.1/jar/lwjgl.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/lwjgl-2.7.1/jar/lzma.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/guava-r09/guava-r09-gwt.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/guava-r09/guava-r09.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/ardor3d0.7/ardor3d-animation-0.7.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/ardor3d0.7/ardor3d-awt-0.7.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/ardor3d0.7/ardor3d-collada-0.7.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/ardor3d0.7/ardor3d-core-0.7.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/ardor3d0.7/ardor3d-effects-0.7.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/ardor3d0.7/ardor3d-extras-0.7.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/ardor3d0.7/ardor3d-jogl-0.7.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/ardor3d0.7/ardor3d-lwjgl-0.7.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/ardor3d0.7/ardor3d-swt-0.7.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/ardor3d0.7/ardor3d-terrain-0.7.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/ardor3d0.7/ardor3d-ui-0.7.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
