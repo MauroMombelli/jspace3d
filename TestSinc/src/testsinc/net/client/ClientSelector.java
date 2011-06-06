@@ -6,6 +6,7 @@ package testsinc.net.client;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -66,13 +67,14 @@ public class ClientSelector implements Runnable {
     public SyncObjectStream connect(String ip, int port, boolean locking) {
         try {
             selector = Selector.open();
-            SocketChannel serverChannel = SocketChannel.open();
+            DatagramChannel serverChannel = DatagramChannel.open();
             serverChannel.configureBlocking(false);
             serverChannel.connect(new InetSocketAddress(ip, port));
-
+/*
             while (locking && !serverChannel.finishConnect()) {
                 ;
             }
+ */
             System.out.println("Connesso");
             SelectionKey key = serverChannel.register(selector, SelectionKey.OP_READ);
 

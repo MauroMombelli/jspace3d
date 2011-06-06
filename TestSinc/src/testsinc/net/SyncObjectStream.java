@@ -6,6 +6,7 @@ package testsinc.net;
 
 import testsinc.net.utils.ByteStream;
 import java.io.IOException;
+import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -27,19 +28,19 @@ public class SyncObjectStream {
     final ArrayList<Object> receivedObject = new ArrayList<Object>();
     AtomicBoolean closed = new AtomicBoolean(false);
     private PartialObjectBuffer realPartialObj = new PartialObjectBuffer(OBJECT_DIMENSION_BYTE);//because 4 is the dimension of int. see below
-    private final SocketChannel channel;
+    private final DatagramChannel channel;
     private AtomicInteger maxObjectSize = new AtomicInteger(0);//zero if we don't want limit the size
     private Object waitingForInput;
 
     /*
      * How we read object: first of all we need the dimension of the object, in int (4 byte = OBJECT_DIMENSION_BYTE), then we can read many byte as the dimension
      */
-    public SyncObjectStream(SelectionKey k, SocketChannel c) {
+    public SyncObjectStream(SelectionKey k, DatagramChannel c) {
         this.key = k;
         this.channel = c;
     }
 
-    public SyncObjectStream(SelectionKey k, SocketChannel c, int maxObjSize) {
+    public SyncObjectStream(SelectionKey k, DatagramChannel c, int maxObjSize) {
         this(k, c);
         maxObjectSize.set(maxObjSize);
     }
