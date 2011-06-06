@@ -5,9 +5,9 @@
 
 package testsinc.net.server;
 
+import java.nio.channels.DatagramChannel;
 import testsinc.net.shared.autentication.Seed;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.SocketChannel;
 import java.util.Calendar;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -26,7 +26,7 @@ public class ConnectionInfo extends SyncObjectStream{
         super (k, c);
     }
 */
-    public ConnectionInfo(SelectionKey k, SocketChannel c, int maxObjSize) {
+    public ConnectionInfo(SelectionKey k, DatagramChannel c, int maxObjSize) {
         super (k, c, maxObjSize);
         sendPasswordSeed();
     }
