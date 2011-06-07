@@ -3,7 +3,11 @@
 	<classpathentry kind="src" path="TestSinc/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="TestSinc/lib/vecmath/vecmath.jar"/>
-	<classpathentry kind="lib" path="TestSinc/lib/jbullet-20101010.jar"/>
+	<classpathentry kind="lib" path="TestSinc/lib/jbullet-20101010.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/Users/Fra/Documents/Programmazione/JBullet/jbullet-20101010/JBullet/dist/javadoc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="TestSinc/lib/lwjgl-2.7.1/jar/AppleJavaExtensions.jar"/>
 	<classpathentry kind="lib" path="TestSinc/lib/lwjgl-2.7.1/jar/jinput.jar"/>
 	<classpathentry kind="lib" path="TestSinc/lib/lwjgl-2.7.1/jar/lwjgl_test.jar"/>
