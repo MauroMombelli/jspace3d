@@ -5,7 +5,7 @@
 
 package testsinc;
 
-import Test.server.physic.EnginePhysic;
+import Test.server.physic.PhysicsEngine;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,7 +23,7 @@ public class MainServer {
     RawConnectionContainer connectionContainer;
     UserContainer usersEngine = new UserContainer();
 
-    EnginePhysic physic = new EnginePhysic();
+    PhysicsEngine physic = new PhysicsEngine();
 
 
     public static void main(String args[]){
@@ -49,7 +49,7 @@ public class MainServer {
     }
 
     private void startPhysic() {
-        physic = new EnginePhysic();
+        physic = new PhysicsEngine();
     }
 
     private void run() {

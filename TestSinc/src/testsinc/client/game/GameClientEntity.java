@@ -1,19 +1,20 @@
-package testsinc.client;
+package testsinc.client.game;
+
+import testsinc.shared.GameEntity;
 
 import com.ardor3d.scenegraph.Spatial;
 import com.bulletphysics.dynamics.RigidBody;
 
-import testsinc.shared.GameEntity;
-
 /**
- * Extends {@link GameEntity}.
+ * Extends {@link GameEntity}. <br>
+ * <p>
+ * Will provide specific functions to the client's entities, in particular to
+ * the physical simulation and graphical update pipeline.
+ * </p>
  * <br>
- * <br>
- * Will provide specific functions to the client physical simulation and graphical update pipeline.
- * <br>
- * <br>
+ * 
  * @author Goffredo Goffrei
- *	
+ * 
  */
 
 public class GameClientEntity extends GameEntity {
@@ -24,9 +25,7 @@ public class GameClientEntity extends GameEntity {
 	 */
 	public GameClientEntity(RigidBody physicalEntity, Spatial graphicalEntity) {
 		super(physicalEntity, graphicalEntity);
-		// TODO Auto-generated constructor stub
+
 	}
-	
-	
 
 }
