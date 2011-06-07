@@ -4,11 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import Test.server.physic.PhysicsEngine;
 
-import com.ardor3d.framework.Scene;
 import com.ardor3d.framework.Updater;
-import com.ardor3d.intersection.PickResults;
-import com.ardor3d.math.Ray3;
-import com.ardor3d.renderer.Renderer;
 import com.ardor3d.util.ReadOnlyTimer;
 
 /**
@@ -28,7 +24,7 @@ import com.ardor3d.util.ReadOnlyTimer;
  * 
  */
 
-public abstract class AbstractGame implements Runnable, Scene, Updater {
+public abstract class AbstractGame implements Updater {
 
 	protected final PhysicsEngine physicalEngine = new PhysicsEngine();
 	private AtomicBoolean running = new AtomicBoolean(false);
@@ -48,29 +44,11 @@ public abstract class AbstractGame implements Runnable, Scene, Updater {
 	 */
 	@Override
 	public void update(ReadOnlyTimer arg0) {
-		physicalEngine.update();
-	}
-
-	@Override
-	public PickResults doPick(Ray3 arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean renderUnto(Renderer arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	/**
-	 * Run this class in its own thread. Never call an update from any other
-	 * thread, or you will be shot.
-	 */
-	@Override
-	public void run() {
-		while (running.get()) {
-
+		/*
+		 * Update game only if not paused (like when in menu)
+		 */
+		if (running.get()) {
+			physicalEngine.update();
 		}
 	}
 
@@ -81,7 +59,6 @@ public abstract class AbstractGame implements Runnable, Scene, Updater {
 	public void start() {
 		if (gameInitialized.get()) {
 			running.set(true);
-			new Thread(this, "Gioco Astratto").start();
 		} else {
 			System.out.println("Game not initialized!");
 		}
