@@ -25,5 +25,6 @@
 	<classpathentry kind="lib" path="TestSinc/lib/ardor3d0.7/ardor3d-swt-0.7.jar"/>
 	<classpathentry kind="lib" path="TestSinc/lib/ardor3d0.7/ardor3d-terrain-0.7.jar"/>
 	<classpathentry kind="lib" path="TestSinc/lib/ardor3d0.7/ardor3d-ui-0.7.jar"/>
+	<classpathentry kind="con" path="com.soyatec.uml.CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
