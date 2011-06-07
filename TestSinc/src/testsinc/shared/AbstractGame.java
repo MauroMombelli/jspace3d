@@ -81,7 +81,7 @@ public abstract class AbstractGame implements Runnable, Scene, Updater {
 	public void start() {
 		if (gameInitialized.get()) {
 			running.set(true);
-			new Thread(this).start();
+			new Thread(this, "Gioco Astratto").start();
 		} else {
 			System.out.println("Game not initialized!");
 		}

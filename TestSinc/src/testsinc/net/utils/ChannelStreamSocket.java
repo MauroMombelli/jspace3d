@@ -7,6 +7,7 @@ package testsinc.net.utils;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Arrays;
@@ -19,9 +20,9 @@ import testsinc.net.server.ServerSelector;
  *
  * @author mauro
  */
-public class ChannelStream {
+public class ChannelStreamSocket {
     public static boolean writeData(SelectionKey key) {
-        SocketChannel socketChannel = (SocketChannel) key.channel();
+        DatagramChannel socketChannel = (DatagramChannel) key.channel();
         SyncObjectStream byteStream = (SyncObjectStream) key.attachment();
         byte out[] = byteStream.getWriteData();
         if (out==null)
@@ -39,7 +40,7 @@ public class ChannelStream {
             //System.out.println("Written: "+numBytesWritten+" byte"+buf);
         } catch (IOException ex) {
             System.out.println("Error writing data to socket"+socketChannel.socket().getRemoteSocketAddress());
-            Logger.getLogger(ServerSelector.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(ServerSelector.class.getName()).log(Level.SEVERE, null, ex);
             // The remote forcibly closed the connection, cancel
             // the selection key and close the channel.
             byteStream.close();
@@ -50,7 +51,7 @@ public class ChannelStream {
     static final int PACKET_SIZE = 1024;
     private static ByteBuffer readBuffer = ByteBuffer.allocateDirect(PACKET_SIZE);
     public static void readData(SelectionKey key) {
-        SocketChannel socketChannel = (SocketChannel) key.channel();
+        DatagramChannel socketChannel = (DatagramChannel) key.channel();
         SyncObjectStream byteStream = (SyncObjectStream) key.attachment();
 
         // Clear out our read buffer so it's ready for new data

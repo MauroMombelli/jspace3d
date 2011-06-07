@@ -23,7 +23,7 @@ public class TestObjcetReaderClientNew {
 
         ClientSelector connection = new ClientSelector();
         SyncObjectStream serverStream = connection.connect("127.0.0.1", 5000, true);
-        new Thread(connection).start();
+        new Thread(connection, "Client Stream").start();
 
         ArrayList<Object> input = new ArrayList<Object>();
         System.out.println("\tConnesso");
@@ -50,7 +50,5 @@ public class TestObjcetReaderClientNew {
 
         System.out.println("\tClient closed, but now i'll try to write something:");
         serverStream.write("Tentativo scrittura invalido");
-
-        connection.close();
     }
 }
