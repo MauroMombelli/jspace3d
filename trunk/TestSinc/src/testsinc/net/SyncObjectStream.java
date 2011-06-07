@@ -8,9 +8,9 @@ import testsinc.net.utils.ByteStream;
 import java.io.IOException;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -31,6 +31,7 @@ public class SyncObjectStream {
     private final DatagramChannel channel;
     private AtomicInteger maxObjectSize = new AtomicInteger(0);//zero if we don't want limit the size
     private Object waitingForInput;
+    private long timeSincelastRead = Calendar.getInstance().getTimeInMillis();
 
     /*
      * How we read object: first of all we need the dimension of the object, in int (4 byte = OBJECT_DIMENSION_BYTE), then we can read many byte as the dimension
@@ -51,10 +52,8 @@ public class SyncObjectStream {
      */
 
     public void addInput(byte[] array) {
+        timeSincelastRead = Calendar.getInstance().getTimeInMillis();
         try {
-            if (closed.get()) {
-                return;
-            }
 
             array = realPartialObj.addToBuffer(array);
 
@@ -125,6 +124,7 @@ public class SyncObjectStream {
     }
 
     public byte[] getWriteData() {
+        System.out.println("Ready to wryte datda");
         try {
             if (closed.get()) {
                 return null;
@@ -231,7 +231,7 @@ public class SyncObjectStream {
         boolean ok = false;
         synchronized (dataToWrite) {
             ok = dataToWrite.add(data);
-            System.out.println("Added to datawrite:" + ok + " " + dataToWrite.size() + " " + dataToWrite);
+            System.out.println("Added to datawrite:" + ok + " " + dataToWrite.size() + " " + data);
         }
         synchronized (key) {
             key.interestOps(key.interestOps() | SelectionKey.OP_WRITE);
@@ -290,6 +290,10 @@ public class SyncObjectStream {
         synchronized (key) {
             return key.isValid();
         }
+    }
+
+    public long getTimeSinceLastRead() {
+        return timeSincelastRead;
     }
     /*
     public SelectionKey getKey() {

@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import testsinc.net.server.ConnectionInfo;
+import testsinc.net.SyncObjectStream;
 import testsinc.net.shared.autentication.Login;
 
 /**
@@ -21,36 +21,37 @@ import testsinc.net.shared.autentication.Login;
 public class UserContainer {
     private final int MAX_OBJECT_AT_TURN = 10;
 
-    HashMap<Login, ConnectionInfo> users = new HashMap<Login, ConnectionInfo>();
+    HashMap<Login, User> users = new HashMap<Login, User>();
     
 
-    public void addUser(Login name, ConnectionInfo conn){
+    public void addUser(Login name, RawConnection conn){
+        User newUser = new User(conn);
         if (!users.containsKey(name)){
-            users.put(name, conn);
+            users.put(name, newUser);
         }else{
             //utente già presente!
             users.get(name).close();
-            users.put(name, conn);
+            users.put(name, newUser);
         }
     }
 
-    public void addAll(HashMap<Login, ConnectionInfo> waitingUser) {
-        Set<Map.Entry<Login, ConnectionInfo>> mapSet = waitingUser.entrySet();
-        for (Map.Entry<Login, ConnectionInfo> obj:mapSet){
-            addUser(obj.getKey(), obj.getValue());
+    public void addAll(HashMap<Login, RawConnection> waitingUser) {
+        Set<Map.Entry<Login, RawConnection>> mapSet = waitingUser.entrySet();
+        for (Map.Entry<Login, RawConnection> obj:mapSet){
+            addUser(obj.getKey(), obj.getValue() );
         }
     }
 
     public void update(){
         //create a copy of the original collection, because entryset is linked to original, and can cause error if item are removed or added while iterating
-        for (Iterator<Map.Entry<Login, ConnectionInfo>> i = users.entrySet().iterator(); i.hasNext();) {
-            Map.Entry<Login, ConnectionInfo> user = i.next();
+        for (Iterator<Map.Entry<Login, User>> i = users.entrySet().iterator(); i.hasNext();) {
+            Map.Entry<Login, User> user = i.next();
             readData(user);
         }
 
     }
 
-    private void readData(Entry<Login, ConnectionInfo> user) {
+    private void readData(Entry<Login, User> user) {
         if (user.getValue().isClosed()){
             users.remove(user.getKey());
         }

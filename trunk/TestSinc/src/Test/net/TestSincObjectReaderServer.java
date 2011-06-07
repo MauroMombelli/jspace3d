@@ -4,9 +4,9 @@
  */
 package Test.net;
 
-import testsinc.net.server.IDandObject;
-import testsinc.net.server.ConnectionInfoContainer;
+import testsinc.server.IDandObject;
 import testsinc.net.server.ServerSelector;
+import testsinc.server.RawConnectionContainer;
 
 /**
  *
@@ -23,24 +23,26 @@ public class TestSincObjectReaderServer {
     }
 
     public TestSincObjectReaderServer() {
-        ConnectionInfoContainer objLayer = new ConnectionInfoContainer();
+        RawConnectionContainer objLayer = new RawConnectionContainer();
         ServerSelector testServer = new ServerSelector(5000, objLayer);
-        new Thread(testServer).start();
+        new Thread(testServer, "Server").start();
         System.out.println("\tattesaClient");
-        while (objLayer.getNumberOfClients() == 0) {
+        while (objLayer.size() == 0) {
             ;
         }
         System.out.println("\tINIZIO TEST");
-        objLayer.writeBroadcats("test numero 1");
+        objLayer.writeToAll("test numero 1");
 
         System.out.println("\tINIZIO TEST 2");
-        objLayer.writeBroadcats("test numero 2");
+        objLayer.writeToAll("test numero 2");
 
         System.out.println("\tINIZIO TEST 3");
-        objLayer.writeBroadcats("test numero 3");
+        objLayer.writeToAll("test numero 3");
 
         System.out.println("\tINIZIO TEST FINALE");
-        objLayer.writeBroadcats("FINE");
+        objLayer.writeToAll("FINE");
+
+        objLayer.update();
 
         for (IDandObject r : objLayer.readAll()) {
             System.out.println("\tReaded from: "+r.id);
@@ -48,7 +50,18 @@ public class TestSincObjectReaderServer {
                 System.out.println("\t\t"+(String) o);
             }
         }
+        
+        //wait for client to read data
+        /*
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(TestSincObjectReaderServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        */
+        System.out.println("\tClosing server");
         testServer.close();
+        System.out.println("\tClosed");
     }
 
 }
