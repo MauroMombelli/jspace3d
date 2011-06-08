@@ -41,14 +41,14 @@ class NetworkClient{
 
     public ByteBuffer readDatagram(){
         ByteBuffer input = ByteBuffer.allocate(1024);
-        SocketAddress sender = null;
+        InetSocketAddress sender = null;
         boolean readed = false;
         while (!readed ){
             input.clear();
             try {
-                sender = inputChannel.receive(input);
-                //System.out.println( "Net Reading data, data as integer:"+input.asIntBuffer().get()+" form: "+sender );
-                if (sender == null || serverAddress.equals(sender)) {
+                sender = (InetSocketAddress)inputChannel.receive(input);
+                //System.out.println( "Net Reading data, data as integer:"+input.asIntBuffer().get()+" form: "+sender+" server: "+serverAddress );
+                if (sender == null || serverAddress.getHostName().equals(sender.getHostName())) {
                     readed = true;
                 }
             } catch (IOException ex) {
@@ -59,6 +59,7 @@ class NetworkClient{
         //input.flip();
         if (sender==null)
             return null;
+        input.flip();
         return input;
     }
 
