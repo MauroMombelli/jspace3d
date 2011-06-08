@@ -12,6 +12,7 @@ import com.bulletphysics.collision.dispatch.CollisionDispatcher;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.DynamicsWorld;
+import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import com.bulletphysics.linearmath.Clock;
 
@@ -73,6 +74,10 @@ public class PhysicsEngine {
 			// optional but useful: debug drawing
 			dynamicsWorld.debugDrawWorld();
 		}
+	}
+
+	public void addRigidBody(RigidBody toAdd) {
+		dynamicsWorld.addRigidBody(toAdd);
 	}
 
 	private float getDeltaTimeMicroseconds() {

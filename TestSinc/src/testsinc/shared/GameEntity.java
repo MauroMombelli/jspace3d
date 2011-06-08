@@ -4,44 +4,50 @@ import com.ardor3d.scenegraph.Spatial;
 import com.bulletphysics.dynamics.RigidBody;
 
 /**
- * @author  Goffredo Goffrei
+ * @author Goffredo Goffrei
  */
 
 public abstract class GameEntity {
-	
+
 	/**
-	 * @uml.property  name="physicalEntity"
+	 * @uml.property name="physicalEntity"
 	 */
 	protected RigidBody physicalEntity;
 	/**
-	 * @uml.property  name="graphicalEntity"
+	 * @uml.property name="graphicalEntity"
 	 */
 	protected Spatial graphicalEntity;
-	
+
 	/**
-	 * @param physicalEntity  the physicalEntity to set
+	 * @param physicalEntity
+	 *            the physicalEntity to set
 	 */
-	public void setPhysicalEntity(RigidBody physicalEntity) {
+	protected void setPhysicalEntity(RigidBody physicalEntity) {
 		this.physicalEntity = physicalEntity;
 	}
+
 	/**
-	 * @return  the physicalEntity
+	 * @return the physicalEntity
 	 */
-	public RigidBody getPhysicalEntity() {
+	protected RigidBody getPhysicalEntity() {
 		return physicalEntity;
 	}
+
 	/**
-	 * @param graphicalEntity  the graphicalEntity to set
+	 * @param graphicalEntity
+	 *            the graphicalEntity to set
 	 */
-	public void setGraphicalEntity(Spatial graphicalEntity) {
+	protected void setGraphicalEntity(Spatial graphicalEntity) {
 		this.graphicalEntity = graphicalEntity;
 	}
+
 	/**
-	 * @return  the graphicalEntity
+	 * @return the graphicalEntity
 	 */
-	public Spatial getGraphicalEntity() {
+	protected Spatial getGraphicalEntity() {
 		return graphicalEntity;
 	}
+
 	/**
 	 * @param physicalEntity
 	 * @param graphicalEntity
@@ -50,6 +56,5 @@ public abstract class GameEntity {
 		this.physicalEntity = physicalEntity;
 		this.graphicalEntity = graphicalEntity;
 	}
-	
-	
+
 }
