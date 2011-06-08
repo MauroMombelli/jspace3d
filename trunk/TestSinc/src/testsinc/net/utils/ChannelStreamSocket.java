@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.SocketChannel;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,7 +62,7 @@ public class ChannelStreamSocket {
             numRead = socketChannel.read(readBuffer);
         } catch (IOException ex) {
             //Logger.getLogger(ServerSelector.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Wrong disconnection from socket:"+socketChannel.socket().getRemoteSocketAddress());
+            System.out.println("Wrong disconnection from socket:"+socketChannel.socket().getRemoteSocketAddress()+" "+ex);
             // The remote forcibly closed the connection, cancel
             // the selection key and close the channel.
             byteStream.close();
@@ -75,7 +74,7 @@ public class ChannelStreamSocket {
             }
             return;
         }
-
+/*
         if (numRead == -1) {
             System.out.println("Good disconnection from socket:"+socketChannel.socket().getRemoteSocketAddress());
             // Remote entity shut the socket down cleanly. Do the
@@ -89,7 +88,7 @@ public class ChannelStreamSocket {
             key.cancel();
             return;
         }
-
+*/
         // Hand the data off to the rest of the program
         byte lettura[] = new byte[numRead];
         readBuffer.flip();

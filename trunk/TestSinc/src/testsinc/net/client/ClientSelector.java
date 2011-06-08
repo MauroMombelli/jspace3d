@@ -26,13 +26,14 @@ public class ClientSelector implements Runnable {
     Selector selector;
 
     public void run() {
+        /*
         if (server.isValidKey() == null) {
             System.err.println("You must connect the selector before run");
             return;
         }
-
+        */
         while (!server.isClosed()) {
-            System.err.println("Server is open");
+            System.out.println("Server is closed");
             update();
         }
         try {
@@ -57,10 +58,10 @@ public class ClientSelector implements Runnable {
             ;
             }
              */
-            System.out.println("Connesso");
+            //System.out.println("Connesso");
             SelectionKey key = serverChannel.register(selector, SelectionKey.OP_READ);
 
-            server = new SyncObjectStream(key, serverChannel);
+            server = new SyncObjectStream(key);
             key.attach(server);
 
             return server;

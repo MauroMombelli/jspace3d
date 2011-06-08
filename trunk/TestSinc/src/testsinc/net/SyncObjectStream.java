@@ -4,9 +4,8 @@
  */
 package testsinc.net;
 
+import java.nio.ByteBuffer;
 import testsinc.net.utils.ByteStream;
-import java.io.IOException;
-import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +27,6 @@ public class SyncObjectStream {
     final ArrayList<Object> receivedObject = new ArrayList<Object>();
     AtomicBoolean closed = new AtomicBoolean(false);
     private PartialObjectBuffer realPartialObj = new PartialObjectBuffer(OBJECT_DIMENSION_BYTE);//because 4 is the dimension of int. see below
-    private final DatagramChannel channel;
     private AtomicInteger maxObjectSize = new AtomicInteger(0);//zero if we don't want limit the size
     private Object waitingForInput;
     private long timeSincelastRead = Calendar.getInstance().getTimeInMillis();
@@ -36,13 +34,12 @@ public class SyncObjectStream {
     /*
      * How we read object: first of all we need the dimension of the object, in int (4 byte = OBJECT_DIMENSION_BYTE), then we can read many byte as the dimension
      */
-    public SyncObjectStream(SelectionKey k, DatagramChannel c) {
+    public SyncObjectStream(SelectionKey k) {
         this.key = k;
-        this.channel = c;
     }
 
-    public SyncObjectStream(SelectionKey k, DatagramChannel c, int maxObjSize) {
-        this(k, c);
+    public SyncObjectStream(SelectionKey k, int maxObjSize) {
+        this(k);
         maxObjectSize.set(maxObjSize);
     }
     /*
@@ -51,7 +48,7 @@ public class SyncObjectStream {
      *
      */
 
-    public void addInput(byte[] array) {
+    public void addInput(ByteBuffer array) {
         timeSincelastRead = Calendar.getInstance().getTimeInMillis();
         try {
 
@@ -124,7 +121,7 @@ public class SyncObjectStream {
     }
 
     public byte[] getWriteData() {
-        System.out.println("Ready to wryte datda");
+        System.out.println("Ready to write datda");
         try {
             if (closed.get()) {
                 return null;
@@ -141,9 +138,6 @@ public class SyncObjectStream {
                 dataToWrite.remove(0);
                 if (dataToWrite.isEmpty()) {
                     System.out.println("Datawrite is now empty");
-                    synchronized (key) {
-                        key.interestOps(key.interestOps() ^ SelectionKey.OP_WRITE);
-                    }
                 }
             }
             System.out.println("out: " + new String(out));
@@ -184,11 +178,7 @@ public class SyncObjectStream {
     public void close() {
         closed.set(true);
         System.out.println("Closing stream");
-        try {
-            channel.close();
-        } catch (IOException ex) {
-            Logger.getLogger(SyncObjectStream.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
         if (waitingForInput != null) {
             synchronized (waitingForInput) {
                 if (waitingForInput != null) {
