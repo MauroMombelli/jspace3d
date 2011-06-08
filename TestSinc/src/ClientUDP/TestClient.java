@@ -30,7 +30,9 @@ public class TestClient {
                 ByteBuffer c = ByteBuffer.allocate(4);
                 System.out.println("inserisco: "+i+" byte rimanenti: "+c.remaining());
                 c.putInt(i);
-                client.write(c);
+                if ( client.write(c) != 4){
+                    System.err.println("ERRORE!");
+                }
             }
 
         } catch (IOException ex) {

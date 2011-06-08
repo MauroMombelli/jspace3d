@@ -23,9 +23,9 @@ class NetworkClient{
         client.connect(new InetSocketAddress(ip, porta));
     }
 
-    void write(ByteBuffer c) throws IOException {
+    int write(ByteBuffer c) throws IOException {
         c.flip();
-        System.out.println("scritti:"+ client.write(c)+" byte");
+        return client.write(c);
     }
 
 }
