@@ -45,7 +45,7 @@ class NetworkListener implements Runnable {
 
     NetworkListener(int port) throws IOException {
 
-        UPNPHelper.go(port);
+        UPNPHelper.goCling(port);
 
         InetSocketAddress address = new InetSocketAddress(port);
 

@@ -4,17 +4,11 @@
  */
 package ServerUDP;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.parsers.ParserConfigurationException;
-import org.wetorrent.upnp.GatewayDevice;
-import org.wetorrent.upnp.GatewayDiscover;
-import org.wetorrent.upnp.PortMappingEntry;
-import org.xml.sax.SAXException;
+import org.teleal.cling.UpnpService;
+import org.teleal.cling.UpnpServiceImpl;
+import org.teleal.cling.support.igd.PortMappingListener;
+import org.teleal.cling.support.model.PortMapping;
+
 
 
 
@@ -24,6 +18,21 @@ import org.xml.sax.SAXException;
  */
 public class UPNPHelper {
 
+    public static void goCling (int port){
+        PortMapping desiredMapping = new PortMapping( port, "192.168.1.64", PortMapping.Protocol.UDP,"TESTMAURO");
+
+        UpnpService upnpService = new UpnpServiceImpl( new PortMappingListener(desiredMapping) );
+        System.out.println("Chiudo");
+        //upnpService.shutdown();
+        System.out.println("e apro");
+        try{
+            upnpService.getControlPoint().search();
+        }catch (Exception e){
+            System.err.println(e);
+        }
+        System.out.println("Fine");
+    }
+/*
     public static void go(int SAMPLE_PORT) {
 
         GatewayDiscover discover = new GatewayDiscover();
@@ -85,5 +94,5 @@ public class UPNPHelper {
         } catch (SAXException ex) {
             Logger.getLogger(UPNPHelper.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
+    }*/
 }
