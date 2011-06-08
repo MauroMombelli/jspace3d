@@ -16,20 +16,21 @@ import org.teleal.cling.support.model.PortMapping;
 public class UPNPHelper {
 
 	public static void goCling(int port) {
-		PortMapping desiredMapping = new PortMapping(port, "192.168.1.2",
+		PortMapping desiredMapping = new PortMapping(port, "192.168.1.68",
 				PortMapping.Protocol.UDP, "TESTMAURO");
 
+                //System.err.println("Invio");
 		UpnpService upnpService = new UpnpServiceImpl(new PortMappingListener(
 				desiredMapping));
-		System.out.println("Chiudo");
-		// upnpService.shutdown();
-		System.out.println("e apro");
+		//System.err.println("Chiudo");
+		//upnpService.shutdown();
+		//System.err.println("e apro");
 		try {
 			upnpService.getControlPoint().search();
 		} catch (Exception e) {
 			System.err.println(e);
 		}
-		System.out.println("Fine");
+		System.err.println("Fine");
 	}
 	/*
 	 * public static void go(int SAMPLE_PORT) {
