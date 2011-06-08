@@ -9,6 +9,10 @@ import com.bulletphysics.dynamics.RigidBody;
 
 public abstract class GameEntity {
 
+	protected GameEntity() {
+
+	}
+
 	/**
 	 * @uml.property name="physicalEntity"
 	 */

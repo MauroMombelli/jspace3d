@@ -31,7 +31,6 @@ public class GameClient extends AbstractGame {
 
 		// test implementation
 
-		gameInitialized.set(true);
 	}
 
 	/**

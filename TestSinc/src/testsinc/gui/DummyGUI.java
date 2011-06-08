@@ -34,6 +34,7 @@ import com.ardor3d.input.logical.TriggerAction;
 import com.ardor3d.input.logical.TwoInputStates;
 import com.ardor3d.intersection.PickResults;
 import com.ardor3d.math.Ray3;
+import com.ardor3d.math.Vector3;
 import com.ardor3d.renderer.ContextManager;
 import com.ardor3d.renderer.Renderer;
 import com.ardor3d.util.ContextGarbageCollector;
@@ -49,7 +50,7 @@ public class DummyGUI implements Scene {
 	final AtomicBoolean exit = new AtomicBoolean(false);
 	final Timer timer = new Timer();
 	final FrameHandler frameWork = new FrameHandler(timer);
-	final DummyGame game = new DummyGame(logicalLayer);
+	final DummyGame game = new DummyGame(logicalLayer, theCanvas);
 
 	public DummyGUI() {
 
@@ -70,25 +71,28 @@ public class DummyGUI implements Scene {
 
 			@Override
 			public void componentShown(ComponentEvent e) {
-				// TODO Auto-generated method stub
+				lookAtZero(theCanvas);
+				resetCamera(theCanvas);
 
 			}
 
 			@Override
 			public void componentResized(ComponentEvent e) {
-				theCanvas
-						.getCanvasRenderer()
-						.getCamera()
-						.resize(frame.getContentPane().getWidth(),
-								frame.getContentPane().getHeight());
-				theCanvas
-						.getCanvasRenderer()
-						.getCamera()
-						.setFrustumPerspective(
-								45.0f,
-								(float) frame.getContentPane().getWidth()
-										/ (float) frame.getContentPane()
-												.getHeight(), 1, 1000);
+				if (theCanvas != null) {
+					theCanvas
+							.getCanvasRenderer()
+							.getCamera()
+							.resize(frame.getContentPane().getWidth(),
+									frame.getContentPane().getHeight());
+					theCanvas
+							.getCanvasRenderer()
+							.getCamera()
+							.setFrustumPerspective(
+									45.0f,
+									(float) frame.getContentPane().getWidth()
+											/ (float) frame.getContentPane()
+													.getHeight(), 1, 1000);
+				}
 			}
 
 			@Override
@@ -124,6 +128,15 @@ public class DummyGUI implements Scene {
 		frame.dispose();
 	}
 
+	private void resetCamera(final Canvas source) {
+		final Vector3 loc = new Vector3(-100.0f, 0.0f, 100.0f);
+		final Vector3 left = new Vector3(-1.0f, 0.0f, 0.0f);
+		final Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
+		final Vector3 dir = new Vector3(0.0f, 0f, -1.0f);
+
+		source.getCanvasRenderer().getCamera().setFrame(loc, left, up, dir);
+	}
+
 	private void addCanvas(final JFrame frame, final Scene scene,
 			final LogicalLayer logicalLayer, final FrameHandler frameWork)
 			throws Exception {
@@ -137,7 +150,7 @@ public class DummyGUI implements Scene {
 
 		frame.getContentPane().add(theCanvas);
 
-		theCanvas.setSize(new Dimension(800, 600));
+		theCanvas.setSize(new Dimension(1280, 1024));
 		theCanvas.setVisible(true);
 
 		final AwtKeyboardWrapper keyboardWrapper = new AwtKeyboardWrapper(
@@ -176,6 +189,11 @@ public class DummyGUI implements Scene {
 
 		frameWork.addCanvas(theCanvas);
 
+	}
+
+	private void lookAtZero(final Canvas source) {
+		source.getCanvasRenderer().getCamera()
+				.lookAt(Vector3.ZERO, Vector3.UNIT_Y);
 	}
 
 	@Override
