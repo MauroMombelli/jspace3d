@@ -27,7 +27,7 @@ public class ClientWriter {
     }
 
     void write(ByteBuffer t) throws IOException {
-        t.flip();
+        //t.flip();
         int byteWritten = outputChannel.write(t);
         System.out.println( "Writed:"+byteWritten+" byte" );
         /*

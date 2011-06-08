@@ -32,7 +32,7 @@ public class Client {
                 ByteBuffer t = input.get(0);
                 input.remove(0);
                 try {
-                    t.flip();
+                    //t.flip();
                     output.write(t);
                     System.out.println("Sendoing data to client");
                 } catch (IOException ex) {
