@@ -12,7 +12,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import testsinc.net.SyncObjectStream;
@@ -25,11 +27,15 @@ import testsinc.server.RawConnectionContainer;
 public class ServerSelector implements Runnable {
 
     Selector selector;
+    //Selector selectorClient;
+    HashMap<SocketAddress, SyncObjectStream> clients = new HashMap<SocketAddress, SyncObjectStream>();
     //Selector clientListWrite;
     //Selector serverList;
     // The buffer into which we'll read data when it's available
     RawConnectionContainer streamContainer;
-    private int loginByteSize;
+
+    final ConcurrentLinkedQueue<Message> messages = new ConcurrentLinkedQueue<Message>();
+    //private int loginByteSize;
 
     /*
     public ServerSelector(int port) {
@@ -46,21 +52,21 @@ public class ServerSelector implements Runnable {
     }
     }
      */
-
     SocketAddress address;
+    SelectionKey serverKey;
+    DatagramChannel serverChannel;
 
     public ServerSelector(int port, RawConnectionContainer objLayer) {
         streamContainer = objLayer;
         address = new InetSocketAddress(port);
         try {
             selector = Selector.open();
-            
-            DatagramChannel channel = DatagramChannel.open();
-            channel.configureBlocking(false);
-            DatagramSocket socket = channel.socket();
-            socket.bind(address);
 
-            channel.register(selector, SelectionKey.OP_READ);
+            serverChannel = DatagramChannel.open();
+            serverChannel.configureBlocking(false);
+            DatagramSocket socket = serverChannel.socket();
+            socket.bind(address);
+            serverKey = serverChannel.register(selector, SelectionKey.OP_READ);
         } catch (IOException ex) {
             Logger.getLogger(ServerSelector.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -68,7 +74,7 @@ public class ServerSelector implements Runnable {
 
     public void run() {
         //System.out.println("Starting with key: "+selector.keys().size());
-        while (streamContainer.isListening()) {
+        while (streamContainer.isListening() && selector.isOpen()) {
             try {
                 //System.out.println("Actual key: "+selector.keys().size());
                 selector.select();
@@ -87,60 +93,96 @@ public class ServerSelector implements Runnable {
 
                         // Check what event is available and deal with it
                         if (key.isReadable()) {
-                            acceptNewConnections(key);
-                        }// else if (key.isReadable()) {
+                            readData(key);
+                        } else if (key.isWritable()) {
+                            synchronized(messages){
+                                Message t = messages.poll();
+                                if (t!=null){
+                                    serverChannel.send(t.data, t.address);
+                                }else{
+                                    //data is empty
+                                    key.interestOps(key.interestOps() ^ SelectionKey.OP_WRITE);
+                                }
+                            }
+                        }
+
+                        // else if (key.isReadable()) {
                         //    ChannelStreamSocket.readData(key);
                         //} else if (key.isWritable()) {
                         //    ChannelStreamSocket.writeData(key);
                         //}
+
                     }
                 }
+
             } catch (IOException ex) {
                 Logger.getLogger(ServerSelector.class.getName()).log(Level.SEVERE, null, ex);
                 streamContainer.setListening(false);
             }
         }
+
+
         try {
             selector.close();
         } catch (IOException ex) {
             Logger.getLogger(ServerSelector.class.getName()).log(Level.SEVERE, null, ex);
         }
+        streamContainer.closeAll();
     }
-
-    private void acceptNewConnections(SelectionKey serverKey) throws IOException {
-System.out.println("Accepted connection");
-        DatagramChannel serverDatagramChannel = (DatagramChannel) serverKey.channel();
-        SocketAddress receive = serverDatagramChannel.receive(ByteBuffer.allocate(0));
-  
-        // Register the new SocketChannel with our Selector, indicating
-        // we'd like to be notified when there's data waiting to be read
-
-        //SelectionKey clientKey = socketChannel.register(selector, SelectionKey.OP_READ);
+/*
+    private void acceptNewConnections(SocketAddress clientAdress) throws IOException {
 
         DatagramChannel serverChannel = DatagramChannel.open();
         serverChannel.configureBlocking(false);
-        serverChannel.connect(receive);
+        serverChannel.connect(clientAdress);
+        serverChannel.register(selector, SelectionKey.OP_READ);
 
         //ClientSelector clientChannel = new ClientSelector();
         //SyncObjectStream connect = clientChannel.connect(receive, false);
 
-        SelectionKey key = serverChannel.register(selector, SelectionKey.OP_READ);
-
-        SyncObjectStream connect = new SyncObjectStream(key, serverChannel);
-        key.attach(connect);
+        SyncObjectStream connect = new SyncObjectStream(serverChannel);
 
 
-        System.out.println("Acceptated connection from socket:" + receive +" max input buffer: "+serverDatagramChannel.socket().getReceiveBufferSize()+" max output buffer"+serverDatagramChannel.socket().getSendBufferSize());
-        
+        System.out.println("Acceptated connection from socket:" + clientAdress);
+
+
         //ConnectionInfo byteStream = new ConnectionInfo(connect.getKey(), loginByteSize);
         streamContainer.addClient(connect);
         //System.out.println("Acceptated connection from socket:" + socketChannel.socket().getRemoteSocketAddress()+" max input buffer: "+socketChannel.socket().getReceiveBufferSize()+" max output buffer"+socketChannel.socket().getSendBufferSize());
         //return byteStream;
         //return connect;
     }
-
+*/
+    private SyncObjectStream acceptNewConnections(SocketAddress clientAdress) throws IOException {
+        System.out.println("New client: "+clientAdress);
+        SyncObjectStream connect = new SyncObjectStream(serverKey);
+        clients.put(clientAdress, connect);
+        streamContainer.addClient(connect);
+        return connect;
+    }
+    
     public void close() {
         streamContainer.closeAll();
         selector.wakeup();
+    }
+
+    private void readData(SelectionKey key) {
+        DatagramChannel serverDatagramChannel = (DatagramChannel) key.channel();
+        try {
+            ByteBuffer input = ByteBuffer.allocate(1024);
+            SocketAddress clientAdress = serverDatagramChannel.receive(input);
+            System.out.println("Reading data");
+            SyncObjectStream client = clients.get(clientAdress);
+            if (client==null){
+                client = acceptNewConnections(clientAdress);
+            }
+            client.addInput(input);
+        } catch (IOException ex) {
+            Logger.getLogger(ServerSelector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void writeData(SelectionKey key) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

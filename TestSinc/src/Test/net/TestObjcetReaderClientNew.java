@@ -5,6 +5,8 @@
 package Test.net;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import testsinc.net.SyncObjectStream;
 import testsinc.net.client.ClientSelector;
 
@@ -22,13 +24,23 @@ public class TestObjcetReaderClientNew {
         System.out.println("\tInizio New Client");
 
         ClientSelector connection = new ClientSelector();
-        SyncObjectStream serverStream = connection.connect("127.0.0.1", 5000, true);
+        SyncObjectStream serverStream = connection.connect("192.168.1.64", 5000, true);
         new Thread(connection, "Client Stream").start();
 
         ArrayList<Object> input = new ArrayList<Object>();
         System.out.println("\tConnesso");
 
         serverStream.write("Ciao, io sono il client");
+        
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(TestObjcetReaderClientNew.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        serverStream.write("Ciao, io sono il client2");
+
+        serverStream.write("Ciao, io sono il client3");
 
         while (!serverStream.isClosed()) {
             //read all input and show them

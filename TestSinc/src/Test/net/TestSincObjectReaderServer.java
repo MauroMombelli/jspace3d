@@ -4,6 +4,8 @@
  */
 package Test.net;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import testsinc.server.IDandObject;
 import testsinc.net.server.ServerSelector;
 import testsinc.server.RawConnectionContainer;
@@ -30,6 +32,7 @@ public class TestSincObjectReaderServer {
         while (objLayer.size() == 0) {
             ;
         }
+        /*
         System.out.println("\tINIZIO TEST");
         objLayer.writeToAll("test numero 1");
 
@@ -43,6 +46,13 @@ public class TestSincObjectReaderServer {
         objLayer.writeToAll("FINE");
 
         objLayer.update();
+*/
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(TestSincObjectReaderServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         for (IDandObject r : objLayer.readAll()) {
             System.out.println("\tReaded from: "+r.id);
@@ -52,13 +62,13 @@ public class TestSincObjectReaderServer {
         }
         
         //wait for client to read data
-        /*
+        
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ex) {
             Logger.getLogger(TestSincObjectReaderServer.class.getName()).log(Level.SEVERE, null, ex);
         }
-        */
+        
         System.out.println("\tClosing server");
         testServer.close();
         System.out.println("\tClosed");
