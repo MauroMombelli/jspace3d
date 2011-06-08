@@ -47,6 +47,7 @@ public abstract class AbstractGame implements Updater {
 		/*
 		 * Update game only if not paused (like when in menu)
 		 */
+
 		if (running.get()) {
 			physicalEngine.update();
 		}

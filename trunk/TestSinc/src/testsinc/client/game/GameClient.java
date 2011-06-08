@@ -1,5 +1,7 @@
 package testsinc.client.game;
 
+import java.util.ArrayList;
+
 import testsinc.shared.AbstractGame;
 
 import com.ardor3d.scenegraph.Node;
@@ -14,6 +16,7 @@ import com.ardor3d.scenegraph.Node;
 
 public class GameClient extends AbstractGame {
 	private Node rootNode;
+	protected ArrayList<GameClientEntity> entities = new ArrayList<GameClientEntity>();
 
 	public GameClient() {
 		setRootNode(new Node());
@@ -25,6 +28,9 @@ public class GameClient extends AbstractGame {
 		// TODO initialize graphics (load scene)
 		// TODO initialize physics
 		// TODO initialize input triggers (map keys to actions)
+
+		// test implementation
+
 		gameInitialized.set(true);
 	}
 
