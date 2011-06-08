@@ -22,7 +22,7 @@ public class TestClient {
     public TestClient(){
         NetworkClient client;
         try {
-            client = new NetworkClient("127.0.0.1", 5000);
+            client = new NetworkClient("94.36.213.11", 5000);
 
             //ByteBuffer c = ByteBuffer.allocate(4);
             

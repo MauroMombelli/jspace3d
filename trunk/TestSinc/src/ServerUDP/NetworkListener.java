@@ -15,6 +15,8 @@ import java.nio.channels.Selector;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,6 +44,9 @@ class NetworkListener implements Runnable {
     private final SelectionKey serverKey;
 
     NetworkListener(int port) throws IOException {
+
+        UPNPHelper.go(port);
+
         InetSocketAddress address = new InetSocketAddress(port);
 
         serverSelector = Selector.open();
@@ -61,7 +66,6 @@ class NetworkListener implements Runnable {
         while (isListening.get()) {
             try {
                 serverSelector.select();
-                System.out.println( "Select ok" );
                 if (!serverKey.isValid()) {
                     continue;
                 }
@@ -92,12 +96,14 @@ class NetworkListener implements Runnable {
         isListening.set(false);
     }
 
+    SortedSet<Integer> ris = new TreeSet<Integer>();
     private void readData(SelectionKey serverKey) {
         try {
             ByteBuffer input = ByteBuffer.allocate(1024);
             SocketAddress clientAddress = serverChannel.receive(input);
             input.flip();
             System.out.println( "Reading data, data as integer:"+input.asIntBuffer().get()+" from: "+clientAddress );
+            ris.add(input.asIntBuffer().get());
 
             synchronized(inputList){
                 ArrayList<ByteBuffer> client = inputList.get(clientAddress);
@@ -122,4 +128,18 @@ class NetworkListener implements Runnable {
         }
         return buf;
     }
+
+    public void calculateStat() {
+        System.out.println( "Received data: "+ris.size() );
+        int b=0;
+        for (Integer a:ris){
+            if (a<b){
+                System.out.println( "Received duplicated: "+a);
+            }else if (a>b){
+                System.out.println( "Missing: "+a);
+            }
+            b++;
+        }
+    }
+
 }
