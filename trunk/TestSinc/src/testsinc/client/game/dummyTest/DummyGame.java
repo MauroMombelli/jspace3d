@@ -6,6 +6,7 @@ import testsinc.client.game.dummyTest.dummyData.DummyBox;
 import testsinc.client.game.dummyTest.dummyData.DummyTerrain;
 
 import com.ardor3d.framework.Canvas;
+import com.ardor3d.framework.lwjgl.LwjglAwtCanvas;
 import com.ardor3d.input.ButtonState;
 import com.ardor3d.input.InputState;
 import com.ardor3d.input.Key;
@@ -36,7 +37,7 @@ public class DummyGame extends GameClient {
 
 	private LightState _lightState;
 	private LogicalLayer logicalLayer;
-	private static final int MOVE_SPEED = 4;
+	private static final int MOVE_SPEED = 6;
 	private static final double TURN_SPEED = 0.5;
 	private final Matrix3 _incr = new Matrix3();
 	private static final double MOUSE_TURN_SPEED = 1;
@@ -53,7 +54,8 @@ public class DummyGame extends GameClient {
 			entity.syncGraphicsWithPhysics();
 	}
 
-	public DummyGame(LogicalLayer _logicalLayer) {
+	public DummyGame(LogicalLayer _logicalLayer, LwjglAwtCanvas theCanvas) {
+
 		logicalLayer = _logicalLayer;
 		/**
 		 * Create a ZBuffer to display pixels closest to the camera above
@@ -80,6 +82,19 @@ public class DummyGame extends GameClient {
 
 		getRootNode().getSceneHints().setRenderBucketType(
 				RenderBucketType.Opaque);
+
+		registerInputTriggers();
+		init();
+	}
+
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		super.init();
+		gameInitialized.set(false);
+		entities.clear();
+		getRootNode().detachAllChildren();
+		physicalEngine.clear();
 		DummyTerrain terrain = new DummyTerrain();
 		terrain.setPosition(0, -20, 0);
 		entities.add(terrain);
@@ -87,14 +102,13 @@ public class DummyGame extends GameClient {
 		physicalEngine.addRigidBody(terrain.getPhysicalEntity());
 		for (int i = 0; i < 100; i++) {
 			DummyBox temp = new DummyBox();
-			temp.setPosition(Math.random() * 10, Math.random() * 10,
-					Math.random() * 10);
+			temp.setPosition(Math.random() * 20, Math.random() * 20,
+					Math.random() * 20);
 			entities.add(temp);
 			getRootNode().attachChild(temp.getGraphicalEntity());
 			physicalEngine.addRigidBody(temp.getPhysicalEntity());
 		}
-
-		registerInputTriggers();
+		gameInitialized.set(true);
 	}
 
 	private void registerInputTriggers() {
@@ -116,14 +130,14 @@ public class DummyGame extends GameClient {
 				Key.A), new TriggerAction() {
 			public void perform(final Canvas source,
 					final TwoInputStates inputStates, final double tpf) {
-				turnLeft(source, tpf);
+				moveLeft(source, tpf);
 			}
 		}));
 		logicalLayer.registerTrigger(new InputTrigger(new KeyHeldCondition(
 				Key.D), new TriggerAction() {
 			public void perform(final Canvas source,
 					final TwoInputStates inputStates, final double tpf) {
-				turnRight(source, tpf);
+				moveRight(source, tpf);
 			}
 		}));
 		logicalLayer.registerTrigger(new InputTrigger(new KeyHeldCondition(
@@ -134,10 +148,12 @@ public class DummyGame extends GameClient {
 			}
 		}));
 		logicalLayer.registerTrigger(new InputTrigger(new KeyHeldCondition(
-				Key.E), new TriggerAction() {
+				Key.R), new TriggerAction() {
 			public void perform(final Canvas source,
 					final TwoInputStates inputStates, final double tpf) {
-				moveRight(source, tpf);
+				resetCamera(source);
+				lookAtZero(source);
+				init();
 			}
 		}));
 
@@ -202,7 +218,7 @@ public class DummyGame extends GameClient {
 	}
 
 	private void resetCamera(final Canvas source) {
-		final Vector3 loc = new Vector3(0.0f, 0.0f, 10.0f);
+		final Vector3 loc = new Vector3(-100.0f, 0.0f, 100.0f);
 		final Vector3 left = new Vector3(-1.0f, 0.0f, 0.0f);
 		final Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
 		final Vector3 dir = new Vector3(0.0f, 0f, -1.0f);
@@ -239,7 +255,7 @@ public class DummyGame extends GameClient {
 		final Camera camera = canvas.getCanvasRenderer().getCamera();
 
 		final Vector3 temp = Vector3.fetchTempInstance();
-		_incr.fromAngleNormalAxis(speed, camera.getUp());
+		_incr.fromAngleNormalAxis(speed, new Vector3(0, 1, 0));
 
 		_incr.applyPost(camera.getLeft(), temp);
 		camera.setLeft(temp);

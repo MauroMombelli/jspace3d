@@ -36,6 +36,13 @@ public class PhysicsEngine {
 		initPhysics();
 	}
 
+	public void clear() {
+		for (int i = 0; i < dynamicsWorld.getNumCollisionObjects(); i++) {
+			dynamicsWorld.removeCollisionObject(dynamicsWorld
+					.getCollisionObjectArray().get(i));
+		}
+	}
+
 	private void initPhysics() {
 
 		// collision configuration contains default setup for memory, collision
@@ -70,7 +77,7 @@ public class PhysicsEngine {
 
 		// step the simulation
 		if (dynamicsWorld != null) {
-			dynamicsWorld.stepSimulation(ms);
+			dynamicsWorld.stepSimulation(ms / 60f);
 			// optional but useful: debug drawing
 			dynamicsWorld.debugDrawWorld();
 		}

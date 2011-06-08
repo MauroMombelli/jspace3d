@@ -7,6 +7,7 @@ import testsinc.shared.GameEntity;
 import com.ardor3d.math.Quaternion;
 import com.ardor3d.scenegraph.Spatial;
 import com.bulletphysics.dynamics.RigidBody;
+import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 
 /**
@@ -23,28 +24,32 @@ import com.bulletphysics.linearmath.Transform;
 
 public class GameClientEntity extends GameEntity {
 
+	protected Quaternion quat;
+	protected Transform xForm;
+
+	protected GameClientEntity() {
+		quat = new Quaternion();
+		xForm = new Transform();
+	}
+
 	/**
 	 * @param physicalEntity
 	 * @param graphicalEntity
 	 */
 	public GameClientEntity(RigidBody physicalEntity, Spatial graphicalEntity) {
 		super(physicalEntity, graphicalEntity);
-
+		quat = new Quaternion();
+		xForm = new Transform();
 	}
 
 	public void syncGraphicsWithPhysics() {
-		Transform out = new Transform();
-		getPhysicalEntity().getWorldTransform(out);
-		getGraphicalEntity().setTranslation(out.origin.x, out.origin.y,
-				out.origin.z);
-		Quat4f quatTemp = new Quat4f();
-		out.getRotation(quatTemp);
-		Quaternion quat = new Quaternion();
-		quat.setW(quatTemp.w);
-		quat.setX(quatTemp.x);
-		quat.setY(quatTemp.y);
-		quat.setZ(quatTemp.z);
-
+		xForm = ((DefaultMotionState) getPhysicalEntity().getMotionState()).graphicsWorldTrans;
+		getGraphicalEntity().setTranslation(xForm.origin.x, xForm.origin.y,
+				xForm.origin.z);
+		quat.set(xForm.getRotation(new Quat4f()).x,
+				xForm.getRotation(new Quat4f()).y,
+				xForm.getRotation(new Quat4f()).z,
+				xForm.getRotation(new Quat4f()).w);
 		getGraphicalEntity().setRotation(quat);
 	}
 }

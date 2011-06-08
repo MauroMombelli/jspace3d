@@ -12,16 +12,29 @@ import com.ardor3d.scenegraph.Mesh;
 import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.shape.Box;
 import com.bulletphysics.collision.shapes.BoxShape;
+import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBody;
+import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 
 public class DummyBox extends GameClientEntity {
 
 	public DummyBox() {
-		this(new RigidBody(1, new DefaultMotionState(), new BoxShape(
-				new Vector3f(0.1f, 0.1f, 0.1f))), new Box("Terrain",
-				new Vector3(0, 0, 0), 0.2, 0.2, 0.2));
+		super();
+		CollisionShape colShape = new BoxShape(new Vector3f(1, 1, 1));
+		Transform startTransform = new Transform();
+		startTransform.setIdentity();
+		float mass = 1f;
+		Vector3f localInertia = new Vector3f(0, 0, 0);
+		colShape.calculateLocalInertia(mass, localInertia);
+		DefaultMotionState myMotionState = new DefaultMotionState(
+				startTransform);
+		RigidBodyConstructionInfo rbInfo = new RigidBodyConstructionInfo(mass,
+				myMotionState, colShape, localInertia);
+		RigidBody body = new RigidBody(rbInfo);
+		setPhysicalEntity(body);
+		setGraphicalEntity(new Box("Box", new Vector3(0, 0, 0), 1, 1, 1));
 	}
 
 	private DummyBox(RigidBody physicalEntity, Spatial graphicalEntity) {
@@ -60,9 +73,8 @@ public class DummyBox extends GameClientEntity {
 
 	public void setPosition(double x, double y, double z) {
 		getGraphicalEntity().setTranslation(x, y, z);
-		Transform xform = new Transform();
-		xform.setIdentity();
-		xform.origin.set((float) x, (float) y, (float) z);
-		getPhysicalEntity().setCenterOfMassTransform(xform);
+		xForm.setIdentity();
+		xForm.origin.set((float) x, (float) y, (float) z);
+		getPhysicalEntity().setWorldTransform(xForm);
 	}
 }

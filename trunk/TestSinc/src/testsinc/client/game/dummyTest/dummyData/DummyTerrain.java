@@ -21,7 +21,7 @@ public class DummyTerrain extends GameClientEntity {
 	public DummyTerrain() {
 		this(new RigidBody(0, new DefaultMotionState(), new BoxShape(
 				new Vector3f(100, 0.1f, 100))), new Box("Terrain", new Vector3(
-				0, -20, 0), 200, 0.2, 200));
+				0, -20, 0), 100, 0.1, 100));
 	}
 
 	private DummyTerrain(RigidBody physicalEntity, Spatial graphicalEntity) {
