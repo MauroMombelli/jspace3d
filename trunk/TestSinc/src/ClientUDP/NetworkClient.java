@@ -7,25 +7,63 @@ package ClientUDP;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author mauro
  */
 class NetworkClient{
-    DatagramChannel client;
+    private final DatagramChannel outputChannel;
+    private final DatagramChannel inputChannel;
+    private final InetSocketAddress serverAddress;
+    boolean isConnect = true;
 
-    NetworkClient(String ip, int porta) throws IOException{
-        client = DatagramChannel.open();
-        client.configureBlocking(false);
-        client.connect(new InetSocketAddress(ip, porta));
+    NetworkClient(String ip, int portaOutput, int portaInput) throws IOException {
+        serverAddress =new InetSocketAddress(ip, portaOutput);
+        outputChannel = DatagramChannel.open();
+        outputChannel.configureBlocking(false);
+        outputChannel.connect(serverAddress);
+
+        inputChannel = DatagramChannel.open();
+        inputChannel.configureBlocking(false);
+        inputChannel.socket().bind(new InetSocketAddress(portaInput));
     }
 
-    int write(ByteBuffer c) throws IOException {
+    public int write(ByteBuffer c) throws IOException {
         c.flip();
-        return client.write(c);
+        return outputChannel.write(c);
+    }
+
+    public ByteBuffer readDatagram(){
+        ByteBuffer input = ByteBuffer.allocate(1024);
+        SocketAddress sender = null;
+        boolean readed = false;
+        while (!readed ){
+            input.clear();
+            try {
+                sender = inputChannel.receive(input);
+                //System.out.println( "Net Reading data, data as integer:"+input.asIntBuffer().get()+" form: "+sender );
+                if (sender == null || serverAddress.equals(sender)) {
+                    readed = true;
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(NetworkClient.class.getName()).log(Level.SEVERE, null, ex);
+                readed = true;
+            }
+        }
+        //input.flip();
+        if (sender==null)
+            return null;
+        return input;
+    }
+
+    boolean isConnect() {
+        return isConnect;
     }
 
 }

@@ -4,6 +4,7 @@
  */
 package ServerUDP;
 
+import ServerUDP.client.Client;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
@@ -32,7 +33,7 @@ class NetworkListener implements Runnable {
     AtomicBoolean isListening = new AtomicBoolean(false);
 
     final HashMap<SocketAddress, ArrayList<ByteBuffer>> inputList = new HashMap<SocketAddress, ArrayList<ByteBuffer>>();
-    final LinkedList<SocketAddress> newClient = new LinkedList<SocketAddress>();
+    final LinkedList<Client> newClient = new LinkedList<Client>();
 
     final LinkedList<MyDatagram> messages = new  LinkedList<MyDatagram>();
 
@@ -43,11 +44,9 @@ class NetworkListener implements Runnable {
     private final DatagramChannel serverChannel;
     private final SelectionKey serverKey;
 
-    NetworkListener(int port) throws IOException {
+    NetworkListener(int inputPort) throws IOException {
 
-        UPNPHelper.goCling(port);
-
-        InetSocketAddress address = new InetSocketAddress(port);
+        InetSocketAddress address = new InetSocketAddress(inputPort);
 
         serverSelector = Selector.open();
 
@@ -110,8 +109,10 @@ class NetworkListener implements Runnable {
                 if (client==null){
                     client = acceptNewConnections(clientAddress);
                 }
-                synchronized(client){
-                    client.add(input);
+                if (client!=null){
+                    synchronized(client){
+                        client.add(input);
+                    }
                 }
             }
         } catch (IOException ex) {
@@ -122,24 +123,28 @@ class NetworkListener implements Runnable {
     private ArrayList<ByteBuffer> acceptNewConnections(SocketAddress clientAddress) {
         System.out.println("New connection: "+clientAddress);
         final ArrayList<ByteBuffer> buf = new ArrayList<ByteBuffer>();
-        inputList.put(clientAddress, buf);
-        synchronized(newClient){
-            newClient.add(clientAddress);
+        Client temp;
+        try {
+            temp = new Client(clientAddress, buf);
+        } catch (IOException ex) {
+            Logger.getLogger(NetworkListener.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return buf;
-    }
 
-    public void calculateStat() {
-        System.out.println( "Received data: "+ris.size() );
-        int b=0;
-        for (Integer a:ris){
-            if (a<b){
-                System.out.println( "Received duplicated: "+a);
-            }else if (a>b){
-                System.out.println( "Missing: "+a);
+        synchronized(inputList){
+            inputList.put(clientAddress, buf);
+            synchronized(newClient){
+                newClient.add(temp);
             }
-            b++;
+            return buf;
         }
     }
 
+    public LinkedList<Client> getAndRemoveWaitingClient(){
+        synchronized(newClient){
+            LinkedList<Client> tempNewClient = new LinkedList<Client>(newClient);
+            newClient.clear();
+            return tempNewClient;
+        }
+    }
 }

@@ -16,7 +16,7 @@ import org.teleal.cling.support.model.PortMapping;
 public class UPNPHelper {
 
 	public static void goCling(int port) {
-		PortMapping desiredMapping = new PortMapping(port, "192.168.1.68",
+		PortMapping desiredMapping = new PortMapping(port, "192.168.1.64",
 				PortMapping.Protocol.UDP, "TESTMAURO");
 
                 //System.err.println("Invio");

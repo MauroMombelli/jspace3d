@@ -22,7 +22,7 @@ public class TestClient {
     public TestClient(){
         NetworkClient client;
         try {
-            client = new NetworkClient("94.36.213.11", 5000);
+            client = new NetworkClient("78.12.185.49", 5000, 5001);
 
             //ByteBuffer c = ByteBuffer.allocate(4);
             
@@ -34,7 +34,13 @@ public class TestClient {
                     System.err.println("ERRORE!");
                 }
             }
-
+            ByteBuffer t;
+            while(client.isConnect()){
+                t = client.readDatagram();
+                //if (t.)
+                if (t!=null)
+                    System.out.println( "Reading data, data as integer:"+t.asIntBuffer().get() );
+            }
         } catch (IOException ex) {
             Logger.getLogger(TestClient.class.getName()).log(Level.SEVERE, null, ex);
         }
