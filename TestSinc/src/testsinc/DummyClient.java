@@ -12,8 +12,11 @@ import testsinc.gui.DummyGUI;
 public class DummyClient {
 
 	static {
-		File lwjglNativeFolder = new File(System.getProperty("user.dir"),
-				"TestSinc" + File.separator + "lib" + File.separator
+		//File lwjglNativeFolder = new File(System.getProperty("user.dir"),
+		//		"TestSinc" + File.separator + "lib" + File.separator
+		//				+ "lwjgl-2.7.1" + File.separator + "native");
+            File lwjglNativeFolder = new File(System.getProperty("user.dir"),
+				"lib" + File.separator
 						+ "lwjgl-2.7.1" + File.separator + "native");
 		File thisSoNativeFolder = new File(lwjglNativeFolder,
 				LWJGLUtil.getPlatformName());
