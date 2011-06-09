@@ -45,8 +45,8 @@ public class TestServer {
                 if (waitingClient!=null && waitingClient.size() > 0)
                     clients.addAll( waitingClient );
                 //System.out.println("ConnectedClient: "+clients.size());
-                for (Client c:clients){
-                    c.echo();
+                for (int i=0; i < clients.size(); i++){
+                    clients.get(i).echo();
                 }
                 /*
                 try {
