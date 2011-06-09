@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ServerUDP.client;
 
 import java.io.IOException;
@@ -21,14 +20,15 @@ public class Client {
     private final ArrayList<ByteBuffer> input;
     private final ClientWriter output;
 
-    public Client(SocketAddress address, ArrayList<ByteBuffer> input) throws IOException{
+    public Client(SocketAddress address, ArrayList<ByteBuffer> input) throws IOException {
         this.input = input;
         output = new ClientWriter(address);
     }
 
     public void echo() {
-        synchronized(input){
-            while(input.size()>0){
+        synchronized (input) {
+            //while(input.size()>0){
+            if (input.size() > 0) {
                 ByteBuffer t = input.get(0);
                 input.remove(0);
                 try {

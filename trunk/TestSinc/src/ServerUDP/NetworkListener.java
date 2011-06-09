@@ -100,6 +100,10 @@ class NetworkListener implements Runnable {
         try {
             ByteBuffer input = ByteBuffer.allocate(1024);
             SocketAddress clientAddress = serverChannel.receive(input);
+            if (clientAddress==null){
+                //null sender, means no data read. return now
+                return;
+            }
             input.flip();
             System.out.println( "Reading data, data as integer:"+input.asIntBuffer().get()+" from: "+clientAddress );
             ris.add(input.asIntBuffer().get());
