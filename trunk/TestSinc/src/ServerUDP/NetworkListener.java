@@ -95,7 +95,6 @@ class NetworkListener implements Runnable {
         isListening.set(false);
     }
 
-    SortedSet<Integer> ris = new TreeSet<Integer>();
     private void readData(SelectionKey serverKey) {
         try {
             ByteBuffer input = ByteBuffer.allocate(1024);
@@ -106,7 +105,6 @@ class NetworkListener implements Runnable {
             }
             input.flip();
             System.out.println( "Reading data, data as integer:"+input.asIntBuffer().get()+" from: "+clientAddress );
-            ris.add(input.asIntBuffer().get());
 
             synchronized(inputList){
                 ArrayList<ByteBuffer> client = inputList.get(clientAddress);
@@ -146,6 +144,8 @@ class NetworkListener implements Runnable {
 
     public LinkedList<Client> getAndRemoveWaitingClient(){
         synchronized(newClient){
+            if (newClient.size()==0)
+                return null;
             LinkedList<Client> tempNewClient = new LinkedList<Client>(newClient);
             newClient.clear();
             return tempNewClient;
