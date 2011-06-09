@@ -25,6 +25,7 @@ public class Client {
         output = new ClientWriter(address);
     }
 
+    int readedData = 0;
     public void echo() {
         synchronized (input) {
             //while(input.size()>0){
@@ -34,7 +35,8 @@ public class Client {
                 try {
                     //t.flip();
                     output.write(t);
-                    System.out.println("Sendoing data to client");
+                    readedData++;
+                    System.out.println("Send"+readedData);
                 } catch (IOException ex) {
                     Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                 }

@@ -15,6 +15,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -150,5 +151,9 @@ class NetworkListener implements Runnable {
             newClient.clear();
             return tempNewClient;
         }
+    }
+
+    void banIP(HashSet<String> andRemoveBannedIP) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }
