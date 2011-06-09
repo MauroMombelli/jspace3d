@@ -35,12 +35,11 @@ public class ClientWriter {
     void write(ByteBuffer t) throws IOException {
         //t.flip();
         int byteWritten = outputChannel.write(t);
-        System.out.println( "Writed:"+byteWritten+" byte" );
-        /*
-        if (byteWritten!=t.capacity()){
-            System.out.println( "Reading data, data as integer:"+t.asIntBuffer().get() );
+        //System.out.println( "Writed:"+byteWritten+" byte "+t.capacity()+" "+t.limit() );
+        
+        if (byteWritten!=t.limit()){
+            System.out.println( "Written only:"+byteWritten+" byte of "+t.limit() );
         }
-         */
+     
     }
-
 }

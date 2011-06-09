@@ -36,7 +36,7 @@ public class TestClient {
 				
 
                                 String out ="inserisco: " + i + " byte rimanenti";
-                                System.out.println(out);
+                                //System.out.println(out);
                                 ByteBuffer c = ByteBuffer.allocate(out.length()*2);
 
                                 for (int indexChar=0; indexChar < out.length();indexChar++){
@@ -45,13 +45,13 @@ public class TestClient {
                                 }
                                 
 				if (client.write(c) != out.length()*2) {
-					System.err.println("ERRORE!");
+					//System.err.println("ERRORE!");
 				}
-				readData();
+				//readData();
 			}
 			long time2 = GregorianCalendar.getInstance().getTimeInMillis();
 
-			System.err.println("Time to write data: " + (time2 - time));
+			System.out.println("\tTime to write data: " + (time2 - time));
 			while (client.isConnect()) {
 				readData();
 				/*
