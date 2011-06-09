@@ -41,7 +41,9 @@ public class TestServer {
         }else{
             System.out.println("Echo");
             while(server.isListening.get()){
-                clients.addAll( server.getAndRemoveWaitingClient() );
+                LinkedList<Client> waitingClient = server.getAndRemoveWaitingClient();
+                if (waitingClient!=null && waitingClient.size() > 0)
+                    clients.addAll( waitingClient );
                 //System.out.println("ConnectedClient: "+clients.size());
                 for (Client c:clients){
                     c.echo();
