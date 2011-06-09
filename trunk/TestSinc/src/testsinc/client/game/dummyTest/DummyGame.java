@@ -1,7 +1,6 @@
 package testsinc.client.game.dummyTest;
 
 import testsinc.client.game.GameClient;
-import testsinc.client.game.GameClientEntity;
 import testsinc.client.game.dummyTest.dummyData.DummyBox;
 import testsinc.client.game.dummyTest.dummyData.DummyTerrain;
 
@@ -37,7 +36,7 @@ public class DummyGame extends GameClient {
 
 	private LightState _lightState;
 	private LogicalLayer logicalLayer;
-	private static final int MOVE_SPEED = 6;
+	private static final int MOVE_SPEED = 30;
 	private static final double TURN_SPEED = 0.5;
 	private final Matrix3 _incr = new Matrix3();
 	private static final double MOUSE_TURN_SPEED = 1;
@@ -49,9 +48,10 @@ public class DummyGame extends GameClient {
 		final double tpf = arg0.getTimePerFrame();
 		logicalLayer.checkTriggers(tpf);
 		getRootNode().updateGeometricState(tpf, true);
-
-		for (GameClientEntity entity : entities)
-			entity.syncGraphicsWithPhysics();
+		/*
+		 * for (GameClientEntity entity : entities)
+		 * entity.syncGraphicsWithPhysics();
+		 */
 	}
 
 	public DummyGame(LogicalLayer _logicalLayer, LwjglAwtCanvas theCanvas) {
@@ -96,11 +96,11 @@ public class DummyGame extends GameClient {
 		getRootNode().detachAllChildren();
 		physicalEngine.clear();
 		DummyTerrain terrain = new DummyTerrain();
-		terrain.setPosition(0, -20, 0);
+		// terrain.setPosition(0, -20, 0);
 		entities.add(terrain);
 		getRootNode().attachChild(terrain.getGraphicalEntity());
 		physicalEngine.addRigidBody(terrain.getPhysicalEntity());
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 1; i++) {
 			DummyBox temp = new DummyBox();
 			temp.setPosition(Math.random() * 20, Math.random() * 20,
 					Math.random() * 20);

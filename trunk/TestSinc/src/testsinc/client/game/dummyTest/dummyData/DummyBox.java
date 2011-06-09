@@ -3,6 +3,7 @@ package testsinc.client.game.dummyTest.dummyData;
 import javax.vecmath.Vector3f;
 
 import testsinc.client.game.GameClientEntity;
+import testsinc.physic.utils.ArdorMotionState;
 
 import com.ardor3d.bounding.BoundingBox;
 import com.ardor3d.math.Vector3;
@@ -15,26 +16,32 @@ import com.bulletphysics.collision.shapes.BoxShape;
 import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
-import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 
 public class DummyBox extends GameClientEntity {
 
 	public DummyBox() {
 		super();
+		/*
+		 * Set Graphical entity
+		 */
+		setGraphicalEntity(new Box("Box", new Vector3(0, 0, 0), 1, 1, 1));
+
+		/*
+		 * Set Physical entity
+		 */
 		CollisionShape colShape = new BoxShape(new Vector3f(1, 1, 1));
 		Transform startTransform = new Transform();
 		startTransform.setIdentity();
 		float mass = 1f;
 		Vector3f localInertia = new Vector3f(0, 0, 0);
 		colShape.calculateLocalInertia(mass, localInertia);
-		DefaultMotionState myMotionState = new DefaultMotionState(
-				startTransform);
+		ArdorMotionState myMotionState = new ArdorMotionState(startTransform);
+		myMotionState.setSpatial(graphicalEntity);
 		RigidBodyConstructionInfo rbInfo = new RigidBodyConstructionInfo(mass,
 				myMotionState, colShape, localInertia);
 		RigidBody body = new RigidBody(rbInfo);
 		setPhysicalEntity(body);
-		setGraphicalEntity(new Box("Box", new Vector3(0, 0, 0), 1, 1, 1));
 	}
 
 	private DummyBox(RigidBody physicalEntity, Spatial graphicalEntity) {

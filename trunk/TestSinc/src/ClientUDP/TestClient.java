@@ -9,63 +9,64 @@ import java.nio.ByteBuffer;
 import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import sun.util.calendar.Gregorian;
 
 /**
- *
+ * 
  * @author mauro
  */
 public class TestClient {
 
-    NetworkClient client;
-    
-    public static void main(String args[]) {
-        new TestClient();
-    }
+	NetworkClient client;
 
-    public TestClient() {
-        
-        try {
-            client = new NetworkClient("127.0.0.1", 5000, 5001);
+	public static void main(String args[]) {
+		new TestClient();
+	}
 
-            //ByteBuffer c = ByteBuffer.allocate(4);
+	public TestClient() {
 
-            long time = GregorianCalendar.getInstance().getTimeInMillis();
-            for (int i = 0; i < 1000; i++) {
-                ByteBuffer c = ByteBuffer.allocate(4);
-                System.out.println("inserisco: " + i + " byte rimanenti: " + c.remaining());
-                c.putInt(i);
-                if (client.write(c) != 4) {
-                    System.err.println("ERRORE!");
-                }
-                readData();
-            }
-            long time2 = GregorianCalendar.getInstance().getTimeInMillis();
+		try {
+			client = new NetworkClient("127.0.0.1", 5000, 5001);
 
-            System.err.println("Time to write data: "+(time2-time));
-            while (client.isConnect()) {
-                readData();
-/*
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(TestClient.class.getName()).log(Level.SEVERE, null, ex);
-                }
- * 
- */
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(TestClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
+			// ByteBuffer c = ByteBuffer.allocate(4);
 
-    }
+			long time = GregorianCalendar.getInstance().getTimeInMillis();
+			for (int i = 0; i < 1000; i++) {
+				ByteBuffer c = ByteBuffer.allocate(4);
+				System.out.println("inserisco: " + i + " byte rimanenti: "
+						+ c.remaining());
+				c.putInt(i);
+				if (client.write(c) != 4) {
+					System.err.println("ERRORE!");
+				}
+				readData();
+			}
+			long time2 = GregorianCalendar.getInstance().getTimeInMillis();
 
-    int i = 0;
-    private void readData() {
-        ByteBuffer t = client.readDatagram();
-        //if (t.)
-        if (t != null) {
-            System.out.println("Reading data, data as integer:" + t.asIntBuffer().get() + " number read: " + (i++));
-        }
-    }
+			System.err.println("Time to write data: " + (time2 - time));
+			while (client.isConnect()) {
+				readData();
+				/*
+				 * try { Thread.sleep(10); } catch (InterruptedException ex) {
+				 * Logger
+				 * .getLogger(TestClient.class.getName()).log(Level.SEVERE,
+				 * null, ex); }
+				 */
+			}
+		} catch (IOException ex) {
+			Logger.getLogger(TestClient.class.getName()).log(Level.SEVERE,
+					null, ex);
+		}
+
+	}
+
+	int i = 0;
+
+	private void readData() {
+		ByteBuffer t = client.readDatagram();
+		// if (t.)
+		if (t != null) {
+			System.out.println("Reading data, data as integer:"
+					+ t.asIntBuffer().get() + " number read: " + (i++));
+		}
+	}
 }
