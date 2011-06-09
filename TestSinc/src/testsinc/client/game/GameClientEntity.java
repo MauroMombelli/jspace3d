@@ -2,12 +2,12 @@ package testsinc.client.game;
 
 import javax.vecmath.Quat4f;
 
+import testsinc.physic.utils.ArdorMotionState;
 import testsinc.shared.GameEntity;
 
 import com.ardor3d.math.Quaternion;
 import com.ardor3d.scenegraph.Spatial;
 import com.bulletphysics.dynamics.RigidBody;
-import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 
 /**
@@ -43,7 +43,7 @@ public class GameClientEntity extends GameEntity {
 	}
 
 	public void syncGraphicsWithPhysics() {
-		xForm = ((DefaultMotionState) getPhysicalEntity().getMotionState()).graphicsWorldTrans;
+		xForm = ((ArdorMotionState) getPhysicalEntity().getMotionState()).graphicsWorldTrans;
 		getGraphicalEntity().setTranslation(xForm.origin.x, xForm.origin.y,
 				xForm.origin.z);
 		quat.set(xForm.getRotation(new Quat4f()).x,

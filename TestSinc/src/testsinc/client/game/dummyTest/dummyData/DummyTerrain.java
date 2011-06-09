@@ -3,6 +3,7 @@ package testsinc.client.game.dummyTest.dummyData;
 import javax.vecmath.Vector3f;
 
 import testsinc.client.game.GameClientEntity;
+import testsinc.physic.utils.ArdorMotionState;
 
 import com.ardor3d.bounding.BoundingBox;
 import com.ardor3d.math.Vector3;
@@ -12,16 +13,36 @@ import com.ardor3d.scenegraph.Mesh;
 import com.ardor3d.scenegraph.Spatial;
 import com.ardor3d.scenegraph.shape.Box;
 import com.bulletphysics.collision.shapes.BoxShape;
+import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBody;
-import com.bulletphysics.linearmath.DefaultMotionState;
+import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.Transform;
 
 public class DummyTerrain extends GameClientEntity {
 
 	public DummyTerrain() {
-		this(new RigidBody(0, new DefaultMotionState(), new BoxShape(
-				new Vector3f(100, 0.1f, 100))), new Box("Terrain", new Vector3(
-				0, -20, 0), 100, 0.1, 100));
+		super();
+		/*
+		 * Set Graphical entity
+		 */
+		setGraphicalEntity(new Box("Box", new Vector3(-50, -20, -50), 100, 1,
+				100));
+
+		/*
+		 * Set Physical entity
+		 */
+		CollisionShape colShape = new BoxShape(new Vector3f(50, 0.5f, 50));
+		Transform startTransform = new Transform();
+		startTransform.setIdentity();
+		float mass = 0f;
+		Vector3f localInertia = new Vector3f(0, 0, 0);
+		colShape.calculateLocalInertia(mass, localInertia);
+		ArdorMotionState myMotionState = new ArdorMotionState(startTransform);
+		myMotionState.setSpatial(graphicalEntity);
+		RigidBodyConstructionInfo rbInfo = new RigidBodyConstructionInfo(mass,
+				myMotionState, colShape, localInertia);
+		RigidBody body = new RigidBody(rbInfo);
+		setPhysicalEntity(body);
 	}
 
 	private DummyTerrain(RigidBody physicalEntity, Spatial graphicalEntity) {
@@ -63,7 +84,7 @@ public class DummyTerrain extends GameClientEntity {
 		Transform xform = new Transform();
 		xform.setIdentity();
 		xform.origin.set((float) x, (float) y, (float) z);
-		getPhysicalEntity().setCenterOfMassTransform(xform);
+		getPhysicalEntity().setWorldTransform(xform);
 	}
 
 }
