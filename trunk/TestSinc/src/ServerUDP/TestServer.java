@@ -23,6 +23,7 @@ public class TestServer {
     LinkedList<Client> clients = new LinkedList<Client>();
 
     public static void main(String args[]) {
+        //UPNPHelper.goCling(-10);
         TestServer main = new TestServer();
 
         main.startNetwork();
@@ -48,14 +49,12 @@ public class TestServer {
                 for (int i=0; i < clients.size(); i++){
                     clients.get(i).echo();
                 }
-                /*
+                
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(5);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(TestServer.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                 * 
-                 */
             }
         }
         System.out.println("END Echo");
