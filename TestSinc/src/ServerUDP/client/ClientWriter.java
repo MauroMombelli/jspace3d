@@ -10,20 +10,26 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author mauro
  */
 public class ClientWriter {
-    private final DatagramChannel outputChannel;
+    private DatagramChannel outputChannel;
 
-    ClientWriter(SocketAddress address) throws IOException {
-        outputChannel = DatagramChannel.open();
-        outputChannel.configureBlocking(false);
-        InetSocketAddress adr = (InetSocketAddress)address;
-        adr = new InetSocketAddress(adr.getHostName(), 5001);
-        outputChannel.connect(adr);
+    ClientWriter(SocketAddress address) {
+        try {
+            outputChannel = DatagramChannel.open();
+            outputChannel.configureBlocking(false);
+            InetSocketAddress adr = (InetSocketAddress) address;
+            adr = new InetSocketAddress(adr.getHostName(), 5001);
+            outputChannel.connect(adr);
+        } catch (IOException ex) {
+            Logger.getLogger(ClientWriter.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     void write(ByteBuffer t) throws IOException {

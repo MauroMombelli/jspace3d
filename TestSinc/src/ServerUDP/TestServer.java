@@ -46,6 +46,14 @@ public class TestServer {
                 for (Client c:clients){
                     c.echo();
                 }
+                /*
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(TestServer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                 * 
+                 */
             }
         }
         System.out.println("END Echo");
