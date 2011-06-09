@@ -31,11 +31,20 @@ public class TestClient {
 
 			long time = GregorianCalendar.getInstance().getTimeInMillis();
 			for (int i = 0; i < 1000; i++) {
-				ByteBuffer c = ByteBuffer.allocate(4);
-				System.out.println("inserisco: " + i + " byte rimanenti: "
-						+ c.remaining());
-				c.putInt(i);
-				if (client.write(c) != 4) {
+				
+
+				
+
+                                String out ="inserisco: " + i + " byte rimanenti";
+                                System.out.println(out);
+                                ByteBuffer c = ByteBuffer.allocate(out.length()*2);
+
+                                for (int indexChar=0; indexChar < out.length();indexChar++){
+                                    //System.out.println("inserimento: "+indexChar+" "+out.length());
+                                    c.putChar( out.charAt(indexChar) );
+                                }
+                                
+				if (client.write(c) != out.length()*2) {
 					System.err.println("ERRORE!");
 				}
 				readData();
