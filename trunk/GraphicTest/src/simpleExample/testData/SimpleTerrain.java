@@ -18,9 +18,9 @@ import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.Transform;
 import game.physics.utils.ArdorMotionState;
 
-public class DummyTerrain extends GameClientEntity {
+public class SimpleTerrain extends GameClientEntity {
 
-    public DummyTerrain() {
+    public SimpleTerrain() {
         super();
         /*
          * Set Graphical entity
@@ -46,7 +46,7 @@ public class DummyTerrain extends GameClientEntity {
         setPhysicalEntity(body);
     }
 
-    private DummyTerrain(RigidBody physicalEntity, Spatial graphicalEntity) {
+    private SimpleTerrain(RigidBody physicalEntity, Spatial graphicalEntity) {
         super(physicalEntity, graphicalEntity);
         getGraphicalEntity().setModelBound(new BoundingBox());
         getGraphicalEntity().setRandomColors();
