@@ -8,7 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import javax.swing.SwingUtilities;
 
 import org.lwjgl.LWJGLUtil;
-import simpleExample.gui.DummyGUI;
+import simpleExample.gui.SimpleGUI;
 
 public class DummyClient {
 
@@ -40,7 +40,7 @@ public class DummyClient {
 
 	}
 
-	protected DummyGUI gui;
+	protected SimpleGUI gui;
 
 	public DummyClient() {
 		try {
@@ -48,7 +48,7 @@ public class DummyClient {
 
 				@Override
 				public void run() {
-					gui = new DummyGUI();
+					gui = new SimpleGUI();
 					gui.getFrame().setVisible(true);
 				}
 			});

@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JFrame;
 
-import simpleExample.DummyGame;
+import simpleExample.SimpleGame;
 
 import com.ardor3d.framework.Canvas;
 import com.ardor3d.framework.DisplaySettings;
@@ -42,7 +42,7 @@ import com.ardor3d.util.GameTaskQueue;
 import com.ardor3d.util.GameTaskQueueManager;
 import com.ardor3d.util.Timer;
 
-public class DummyGUI implements Scene {
+public class SimpleGUI implements Scene {
 
     private LwjglAwtCanvas theCanvas;
     final LogicalLayer logicalLayer = new LogicalLayer();
@@ -50,9 +50,9 @@ public class DummyGUI implements Scene {
     final AtomicBoolean exit = new AtomicBoolean(false);
     final Timer timer = new Timer();
     final FrameHandler frameWork = new FrameHandler(timer);
-    final DummyGame game = new DummyGame(logicalLayer, theCanvas);
+    final SimpleGame game = new SimpleGame(logicalLayer, theCanvas);
 
-    public DummyGUI() {
+    public SimpleGUI() {
 
         final Scene scene1 = this;
 

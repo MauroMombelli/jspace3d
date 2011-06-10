@@ -30,10 +30,10 @@ import com.ardor3d.util.ReadOnlyTimer;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import game.GameClientEntity;
-import simpleExample.testData.DummyBox;
-import simpleExample.testData.DummyTerrain;
+import simpleExample.testData.SimpleBox;
+import simpleExample.testData.SimpleTerrain;
 
-public class DummyGame extends GameClient {
+public class SimpleGame extends GameClient {
 
 	private LightState _lightState;
 	private LogicalLayer logicalLayer;
@@ -41,7 +41,7 @@ public class DummyGame extends GameClient {
 	private static final double TURN_SPEED = 0.5;
 	private final Matrix3 _incr = new Matrix3();
 	private static final double MOUSE_TURN_SPEED = 1;
-        private DummyTerrain terrain = null;
+        private SimpleTerrain terrain = null;
 	@Override
 	public void update(ReadOnlyTimer arg0) {
 		// TODO Auto-generated method stub
@@ -52,7 +52,7 @@ public class DummyGame extends GameClient {
 		 
 	}
 
-	public DummyGame(LogicalLayer _logicalLayer, LwjglAwtCanvas theCanvas) {
+	public SimpleGame(LogicalLayer _logicalLayer, LwjglAwtCanvas theCanvas) {
 
 		logicalLayer = _logicalLayer;
 		/**
@@ -93,13 +93,13 @@ public class DummyGame extends GameClient {
 		entities.clear();
 		getRootNode().detachAllChildren();
 		physicalEngine.clear();
-		terrain = new DummyTerrain();
+		terrain = new SimpleTerrain();
 		terrain.setPosition(0, -20, 0);
 		entities.add(terrain);
 		getRootNode().attachChild(terrain.getGraphicalEntity());
 		physicalEngine.addRigidBody(terrain.getPhysicalEntity());
 		for (int i = 0; i < 1000; i++) {
-			DummyBox temp = new DummyBox();
+			SimpleBox temp = new SimpleBox();
 			temp.setPosition(Math.random() * 20, Math.random() * 20,
 					Math.random() * 20);
 			entities.add(temp);
