@@ -17,7 +17,7 @@ public class DummyClient {
 		//		"TestSinc" + File.separator + "lib" + File.separator
 		//				+ "lwjgl-2.7.1" + File.separator + "native");
             File lwjglNativeFolder = new File(System.getProperty("user.dir"),
-				"lib" + File.separator
+				".." + File.separator +"lib" + File.separator
 						+ "lwjgl-2.7.1" + File.separator + "native");
 		File thisSoNativeFolder = new File(lwjglNativeFolder,
 				LWJGLUtil.getPlatformName());
