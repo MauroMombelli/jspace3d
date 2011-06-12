@@ -14,7 +14,6 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -35,16 +34,12 @@ class NetworkListener implements Runnable {
     final HashMap<SocketAddress, ArrayList<ByteBuffer>> inputList = new HashMap<SocketAddress, ArrayList<ByteBuffer>>();
     final LinkedList<Client> newClient = new LinkedList<Client>();
 
-    //final LinkedList<MyDatagram> messages = new  LinkedList<MyDatagram>();
-
     /*
      * INTERNAL DATA
      */
     Selector serverSelector;
     private final DatagramChannel serverChannel;
     private final SelectionKey serverKey;
-
-    final ByteBuffer input;
 
     NetworkListener(int inputPort) throws IOException {
 
@@ -61,8 +56,6 @@ class NetworkListener implements Runnable {
         serverKey = serverChannel.register(serverSelector, SelectionKey.OP_READ);
 
         isListening.set(true);
-
-        input = ByteBuffer.wrap( new byte[serverChannel.socket().getReceiveBufferSize()] );
     }
 
     public void run() {
@@ -77,20 +70,7 @@ class NetworkListener implements Runnable {
                 if (serverKey.isReadable()) {
                     readData(serverKey);
                 } else if (serverKey.isWritable()) {
-                    /*
-                    synchronized (messages) {
-                        MyDatagram t = messages.poll();
-                        if (t != null) {
-                            serverChannel.send(t.data, t.address);
-                        } else {
-                            //data is empty
-                            serverKey.interestOps(serverKey.interestOps() ^ SelectionKey.OP_WRITE);
-                        }
-                    }
-                    */
-                    
-                    //Actually we never do bradcast, so write to client with Client class.
-                    //Because of this we disable the wakeup for "ready to write" on this channel
+                    //We don't need to send data, so shut down this cpu ungry feature :-)
                     serverKey.interestOps(serverKey.interestOps() ^ SelectionKey.OP_WRITE);
                 }
             } catch (IOException ex) {
@@ -107,17 +87,14 @@ class NetworkListener implements Runnable {
 
     private void readData(SelectionKey serverKey) {
         try {
-            input.clear();
+            ByteBuffer input = ByteBuffer.allocate(1024);
             SocketAddress clientAddress = serverChannel.receive(input);
             if (clientAddress==null){
                 //null sender, means no data read. return now
                 return;
             }
             input.flip();
-
-            ByteBuffer copyOfInput = ByteBuffer.wrap( Arrays.copyOf( input.array(), input.limit() ) );
-
-            //System.out.println( "Reading data, data as integer:\n"+input.asCharBuffer().toString()+"\n"+copyOfInput.asCharBuffer().toString()+" from: "+clientAddress );
+            System.out.println( "Reading data, data as integer:"+input.asIntBuffer().get()+" from: "+clientAddress );
 
             synchronized(inputList){
                 ArrayList<ByteBuffer> client = inputList.get(clientAddress);
@@ -126,7 +103,7 @@ class NetworkListener implements Runnable {
                 }
                 if (client!=null){
                     synchronized(client){
-                        client.add(copyOfInput);
+                        client.add(input);
                     }
                 }
             }
