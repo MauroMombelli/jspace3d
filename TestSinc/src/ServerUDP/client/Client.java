@@ -36,7 +36,7 @@ public class Client {
                     //t.flip();
                     output.write(t);
                     readedData++;
-                    System.out.println("Send"+readedData);
+                    System.out.println("Send number"+readedData+" size:"+t.limit());
                 } catch (IOException ex) {
                     Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                 }

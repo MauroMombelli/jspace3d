@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 public class ClientWriter {
     private DatagramChannel outputChannel;
     private ByteBuffer output;
+    int MTU_MINUS_UDP_HEADER;
 
     public ClientWriter(SocketAddress address) {
 
@@ -32,7 +33,7 @@ public class ClientWriter {
             outputChannel.connect(adr);
 
             NetworkInterface network = NetworkInterface.getByInetAddress( ((InetSocketAddress)outputChannel.socket().getLocalSocketAddress()).getAddress() );
-            int MTU_MINUS_UDP_HEADER = network.getMTU()-100;
+            MTU_MINUS_UDP_HEADER = network.getMTU()-100;
             System.out.println(network.getDisplayName()+" rilevated MTU: "+network.getMTU());
 
             output = ByteBuffer.allocateDirect(MTU_MINUS_UDP_HEADER);

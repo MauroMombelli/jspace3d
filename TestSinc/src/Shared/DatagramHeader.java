@@ -37,4 +37,12 @@ public class DatagramHeader{
         return 2;
     }
 
+    public byte getTurn() {
+        return turnNumber;
+    }
+
+    public byte getNumber() {
+        return datagramNumber;
+    }
+
 }
