@@ -105,7 +105,7 @@ class NetworkListener implements Runnable {
                 return;
             }
             input.flip();
-            System.out.println( "Reading data, data as integer:"+input.asIntBuffer().get()+" from: "+clientAddress );
+            System.out.println( "Reading data, data as integer:"+input.asIntBuffer().get()+" from: "+clientAddress+" size:"+input.limit() );
 
             synchronized(inputList){
                 ArrayList<ByteBuffer> client = inputList.get(clientAddress);
