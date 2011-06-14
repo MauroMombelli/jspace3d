@@ -34,31 +34,47 @@ public class ClientWriter {
 
             NetworkInterface network = NetworkInterface.getByInetAddress( ((InetSocketAddress)outputChannel.socket().getLocalSocketAddress()).getAddress() );
             MTU_MINUS_UDP_HEADER = network.getMTU()-100;
-            System.out.println(network.getDisplayName()+" rilevated MTU: "+network.getMTU());
+            System.out.println("connected with: "+adr+" "+network.getDisplayName()+" rilevated MTU: "+network.getMTU());
 
             output = ByteBuffer.allocateDirect(MTU_MINUS_UDP_HEADER);
+            output.clear();
         } catch (IOException ex) {
             Logger.getLogger(ClientWriter.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public void write(ByteBuffer byteToWrite) throws IOException {
-        if (output.limit() + byteToWrite.limit() > output.capacity()) {
+        //byteToWrite.flip();
+        System.out.println("INFO Written:" + output.position()+" "+byteToWrite.limit()+" "+output.capacity());
+        if (output.position() + byteToWrite.limit() > output.capacity()) {
             //datagram is full, send it
             flush();
         }
+        System.out.println("Adding:" + byteToWrite.limit());
         output.put(byteToWrite);
     }
 
     public void flush() throws IOException {
         output.flip();
+        if (output.limit()<=0){//if nothing to write
+            System.out.println("NOT Written:" + output.limit());
+            return; //do nothing
+        }
+
+        //output.flip();
         int byteWritten = outputChannel.write(output);
 
         if (byteWritten != output.limit()) {
             System.out.println("Written only:" + byteWritten + " byte of " + output.limit());
             output.compact();
         } else {
+            System.out.println("Written:" + byteWritten + " byte of " + output.limit());
             output.clear();
         }
+    }
+
+    void writeNow(ByteBuffer t) throws IOException {
+        write(t);
+        flush();
     }
 }

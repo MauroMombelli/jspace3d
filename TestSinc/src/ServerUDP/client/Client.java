@@ -34,7 +34,8 @@ public class Client {
                 input.remove(0);
                 try {
                     //t.flip();
-                    output.write(t);
+                    System.out.println("Sending number"+readedData+" size:"+t.limit());
+                    output.writeNow(t);
                     readedData++;
                     System.out.println("Send number"+readedData+" size:"+t.limit());
                 } catch (IOException ex) {
