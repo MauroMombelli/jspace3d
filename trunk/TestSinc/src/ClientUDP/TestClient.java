@@ -88,9 +88,13 @@ public class TestClient {
         ByteBuffer t = client.readDatagram();
         // if (t.)
         if (t != null) {
-            //System.out.println("Reading data, data as integer:"+ t.asIntBuffer().get() + " number read: " + (i++));
+            //t.flip();
+            System.out.println("Reading data, data as integer:"+ t.asIntBuffer().get() +" size:"+t.limit()+ " number read: " + (i++));
             data.read(t);
-            System.out.println(data.getString());
+            StringPayload s;
+            while ( (s=data.getString()) != null){
+                System.out.println(s);
+            }
         }
     }
 }

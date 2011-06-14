@@ -45,15 +45,16 @@ class NetworkClient{
     }
 
     public ByteBuffer readDatagram(){
-        ByteBuffer input = ByteBuffer.allocate(1024);
+        ByteBuffer input = ByteBuffer.allocate(MTU);
         InetSocketAddress sender = null;
         boolean readed = false;
         while (!readed ){
             input.clear();
             try {
                 sender = (InetSocketAddress)inputChannel.receive(input);
+
                 //System.out.println( "Net Reading data, data as integer:"+input.asIntBuffer().get()+" form: "+sender+" server: "+serverAddress );
-                if (sender == null || serverAddress.getHostName().equals(sender.getHostName())) {
+                if (sender != null) {
                     readed = true;
                 }
             } catch (IOException ex) {
