@@ -47,11 +47,16 @@ public class StringPayload extends Payload{
         if (data.length() > Byte.MAX_VALUE){
             data = data.substring(0, Byte.MAX_VALUE);
         }
-        return 2 + data.length() * 2; //superclass, 2 for number of char, char*2(unicode, 2 byte per char)
+        return 4 + data.length() * 2; //4 byte for size, 2*char
     }
 
     @Override
     public byte getID() {
         return dataID;
+    }
+
+    @Override
+    public String toString(){
+        return "String Payload: "+dataID+" "+data;
     }
 }

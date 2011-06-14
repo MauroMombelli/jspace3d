@@ -7,13 +7,17 @@ package ServerUDP;
 import ServerUDP.client.Client;
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -33,7 +37,7 @@ class NetworkListener implements Runnable {
 
     final HashMap<SocketAddress, ArrayList<ByteBuffer>> inputList = new HashMap<SocketAddress, ArrayList<ByteBuffer>>();
     final LinkedList<Client> newClient = new LinkedList<Client>();
-
+    int ACTUAL_MAX_MTU=0;
     /*
      * INTERNAL DATA
      */
@@ -56,6 +60,13 @@ class NetworkListener implements Runnable {
         serverKey = serverChannel.register(serverSelector, SelectionKey.OP_READ);
 
         isListening.set(true);
+
+        Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
+        for (NetworkInterface netint : Collections.list(nets))
+            if (netint.getMTU()>ACTUAL_MAX_MTU){
+                ACTUAL_MAX_MTU = netint.getMTU();
+            }
+        System.out.println("Using max MTU of: "+ACTUAL_MAX_MTU);
     }
 
     public void run() {
@@ -87,7 +98,7 @@ class NetworkListener implements Runnable {
 
     private void readData(SelectionKey serverKey) {
         try {
-            ByteBuffer input = ByteBuffer.allocate(1024);
+            ByteBuffer input = ByteBuffer.allocate(ACTUAL_MAX_MTU);
             SocketAddress clientAddress = serverChannel.receive(input);
             if (clientAddress==null){
                 //null sender, means no data read. return now

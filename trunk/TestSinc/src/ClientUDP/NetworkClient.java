@@ -7,6 +7,7 @@ package ClientUDP;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.logging.Level;
@@ -21,6 +22,7 @@ class NetworkClient{
     private final DatagramChannel inputChannel;
     private final InetSocketAddress serverAddress;
     boolean isConnect = true;
+    int MTU;
 
     NetworkClient(String ip, int portaOutput, int portaInput) throws IOException {
         serverAddress =new InetSocketAddress(ip, portaOutput);
@@ -31,6 +33,10 @@ class NetworkClient{
         inputChannel = DatagramChannel.open();
         inputChannel.configureBlocking(false);
         inputChannel.socket().bind(new InetSocketAddress(portaInput));
+
+        NetworkInterface net = NetworkInterface.getByInetAddress(outputChannel.socket().getLocalAddress());
+        MTU = net.getMTU()-100;//-100 is for UDP header
+        System.out.println("Rilevated MTU: "+MTU);
     }
 
     public int write(ByteBuffer c) throws IOException {
@@ -64,6 +70,10 @@ class NetworkClient{
 
     boolean isConnect() {
         return isConnect;
+    }
+
+    public ByteBuffer getNewByteBuffer(){
+        return ByteBuffer.allocate( MTU );
     }
 
 }
