@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.jbox2d</groupId>
+  <artifactId>jbox2d-serialization</artifactId>
+  <versioning>
+    <versions>
+      <version>0.0.1-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20110616083513</lastUpdated>
+  </versioning>
+</metadata>
