@@ -7,6 +7,7 @@ package Shared;
 import Shared.payload.Payload;
 import Shared.payload.StringPayload;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.TreeMap;
 
@@ -72,6 +73,7 @@ public class PayloadContainer {
         }
 
 
+
         System.out.println("DatagramReceived: " + myHeader.getNumber() + " turn: " + myHeader.getTurn() + " lost: " + missingDatagramNumber);
 
         synchronized (dataIn) {
@@ -93,6 +95,7 @@ public class PayloadContainer {
                 }
             }
         }
+        numberInput++;
     }
 
     public void add(Payload payload) {
@@ -103,7 +106,10 @@ public class PayloadContainer {
 
     public StringPayload getString() {
         synchronized (dataIn) {
-            return (StringPayload) dataIn.get(0).poll();
+            LinkedList<Payload> arr = dataIn.get(0);
+            if (arr==null)
+                return null;
+            return (StringPayload) arr.poll();
         }
     }
 

@@ -4,13 +4,8 @@
  */
 package ClientUDP;
 
-import Shared.DatagramHeader;
-import Shared.PayloadContainer;
-import Shared.payload.Payload;
 import Shared.payload.StringPayload;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,7 +16,6 @@ import java.util.logging.Logger;
 public class TestClient {
 
     NetworkClient client;
-    PayloadContainer data = new PayloadContainer();
 
     public static void main(String args[]) {
         new TestClient();
@@ -31,15 +25,13 @@ public class TestClient {
 
         try {
             client = new NetworkClient("192.168.1.64", 5000, 5001);
-            client.getNewByteBuffer();
+            new Thread(client, "ClientNet").start();
 
             // ByteBuffer c = ByteBuffer.allocate(4);
 
-            long time = GregorianCalendar.getInstance().getTimeInMillis();
-            for (int i = 0; i < 1000; i++) {
-                data.add(new StringPayload("inserisco: " + i + " byte rimanenti"));
-
-
+            long time = System.currentTimeMillis();
+            for (int azz = 0; azz < 1000; azz++) {
+                client.add(new StringPayload("inserisco: " + azz + " byte rimanenti"));
 
                 //String out ="inserisco: " + i + " byte rimanenti";
                 //System.out.println(out);
@@ -56,14 +48,11 @@ public class TestClient {
                 //readData();
             }
 
-            ByteBuffer output = client.getNewByteBuffer();
-            data.write(output, DatagramHeader.FAKETURN);
+
             //System.out.println(output.asCharBuffer().toString());
-            if (client.write(output) != output.limit()) {
-                System.out.println("ERRORE!");
-            }
-            
-            long time2 = GregorianCalendar.getInstance().getTimeInMillis();
+
+
+            long time2 = System.currentTimeMillis();
 
             System.out.println("\tTime to write data: " + (time2 - time));
             while (client.isConnect()) {
@@ -85,16 +74,9 @@ public class TestClient {
     int i = 0;
 
     private void readData() {
-        ByteBuffer t = client.readDatagram();
-        // if (t.)
-        if (t != null) {
-            //t.flip();
-            System.out.println("Reading data, data as integer:"+ t.asIntBuffer().get() +" size:"+t.limit()+ " number read: " + (i++));
-            data.read(t);
-            StringPayload s;
-            while ( (s=data.getString()) != null){
-                System.out.println(s);
-            }
+        StringPayload s;
+        while ((s = client.getString()) != null) {
+            System.out.println(s);
         }
     }
 }
