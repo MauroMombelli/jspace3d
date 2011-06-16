@@ -7,7 +7,6 @@ package ServerUDP;
 import ServerUDP.client.Client;
 import java.io.IOException;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketAddress;
