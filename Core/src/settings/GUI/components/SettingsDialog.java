@@ -89,8 +89,7 @@ public class SettingsDialog extends javax.swing.JDialog {
         jLabel1.setText("Resolution:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(12, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(12, 10, 0, 30);
         jPanel4.add(jLabel1, gridBagConstraints);
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -154,30 +153,10 @@ public class SettingsDialog extends javax.swing.JDialog {
 
         jTabbedPane1.addTab("Graphics", jPanel1);
 
-        org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 299, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 78, Short.MAX_VALUE)
-        );
-
+        jPanel2.setLayout(new java.awt.GridBagLayout());
         jTabbedPane1.addTab("Sound", jPanel2);
 
-        org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 299, Short.MAX_VALUE)
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 78, Short.MAX_VALUE)
-        );
-
+        jPanel3.setLayout(new java.awt.GridBagLayout());
         jTabbedPane1.addTab("Network", jPanel3);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
