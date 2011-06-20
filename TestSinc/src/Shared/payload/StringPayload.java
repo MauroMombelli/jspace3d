@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
  * @author mauro
  */
 public class StringPayload extends Payload{
-    private static final byte dataID=0;
+    public static final byte dataID=0;
 
     String data;
 

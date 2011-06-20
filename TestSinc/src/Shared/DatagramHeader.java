@@ -23,9 +23,8 @@ public class DatagramHeader{
         this.turnNumber = turnNumber;
     }
 
-    public void read(ByteBuffer input) {
-        datagramNumber = input.get();
-        turnNumber = input.get();
+    public static DatagramHeader read(ByteBuffer input) {
+        return new DatagramHeader(input.get(), input.get());
     }
 
     public void write(ByteBuffer output) {

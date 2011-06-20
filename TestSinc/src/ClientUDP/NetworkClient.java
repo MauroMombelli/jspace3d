@@ -4,6 +4,7 @@
  */
 package ClientUDP;
 
+import ServerUDP.client.StreamWriter;
 import Shared.DatagramHeader;
 import Shared.PayloadContainer;
 import Shared.payload.Payload;
@@ -24,33 +25,37 @@ import java.util.logging.Logger;
  */
 class NetworkClient implements Runnable {
 
-    private final DatagramChannel outputChannel;
+    ;
     private final DatagramChannel inputChannel;
     private final InetSocketAddress serverAddress;
     boolean isConnect = true;
     int MTU;
-    PayloadContainer data = new PayloadContainer();
+    final PayloadContainer data;
     Selector selector;
-    private final SelectionKey outKey;
+    //private final SelectionKey outKey;
     private final SelectionKey inKey;
 
     NetworkClient(String ip, int portaOutput, int portaInput) throws IOException {
         selector = Selector.open();
         serverAddress = new InetSocketAddress(ip, portaOutput);
+        /*
         outputChannel = DatagramChannel.open();
         outputChannel.configureBlocking(false);
         outputChannel.connect(serverAddress);
+*/
+        StreamWriter ouputChannel = new StreamWriter(serverAddress, 5000);
+        data = new PayloadContainer(ouputChannel);
 
         inputChannel = DatagramChannel.open();
         inputChannel.configureBlocking(false);
         inputChannel.socket().bind(new InetSocketAddress(portaInput));
-
+/*
         NetworkInterface net = NetworkInterface.getByInetAddress(outputChannel.socket().getLocalAddress());
         MTU = net.getMTU() - 100;//-100 is for UDP header
         System.out.println("Rilevated MTU: " + MTU);
 
         outKey = outputChannel.register(selector, SelectionKey.OP_WRITE);
-
+*/
         inKey = inputChannel.register(selector, SelectionKey.OP_READ);
     }
 
@@ -93,18 +98,18 @@ class NetworkClient implements Runnable {
         return ByteBuffer.allocate(MTU);
     }
 
-    public void add(Payload p) {
+    public void add(Payload p) {/*
         data.add(p);
         if (data.hasToWrite()) {
             outKey.interestOps(outKey.interestOps() & SelectionKey.OP_WRITE);
         }
-    }
+  */  }
 
     public StringPayload getString() {
         return data.getString();
     }
 
-    public void run() {
+    public void run() {/*
         while (isConnect) {
             try {
                 System.out.println("Running");
@@ -140,9 +145,10 @@ System.out.println("select ok!");
 
         }
 
-    }
+   */ }
 
     private void close() {
         isConnect = false;
     }
 }
+*

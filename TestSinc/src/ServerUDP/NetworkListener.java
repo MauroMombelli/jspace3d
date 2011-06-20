@@ -5,6 +5,7 @@
 package ServerUDP;
 
 import ServerUDP.client.Client;
+import ServerUDP.client.StreamWriter;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
@@ -14,12 +15,12 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,17 +33,17 @@ class NetworkListener implements Runnable {
     /*
      * ALMOST PUBLIC DATA
      */
-    AtomicBoolean isListening = new AtomicBoolean(false);
 
-    final HashMap<SocketAddress, ArrayList<ByteBuffer>> inputList = new HashMap<SocketAddress, ArrayList<ByteBuffer>>();
+    AtomicBoolean isListening = new AtomicBoolean(false);
+    final HashMap<SocketAddress, Client> allClient = new HashMap<SocketAddress, Client>();
     final LinkedList<Client> newClient = new LinkedList<Client>();
-    int ACTUAL_MAX_MTU=0;
+    int ACTUAL_MAX_MTU = 0;
     /*
      * INTERNAL DATA
      */
     Selector serverSelector;
     private final DatagramChannel serverChannel;
-    private final SelectionKey serverKey;
+    private final SelectionKey myKey;
 
     NetworkListener(int inputPort) throws IOException {
 
@@ -56,32 +57,45 @@ class NetworkListener implements Runnable {
         DatagramSocket socket = serverChannel.socket();
         socket.bind(address);
 
-        serverKey = serverChannel.register(serverSelector, SelectionKey.OP_READ);
+        myKey = serverChannel.register(serverSelector, SelectionKey.OP_READ);
 
         isListening.set(true);
 
         Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-        for (NetworkInterface netint : Collections.list(nets))
-            if (netint.getMTU()>ACTUAL_MAX_MTU){
+        for (NetworkInterface netint : Collections.list(nets)) {
+            if (netint.getMTU() > ACTUAL_MAX_MTU) {
                 ACTUAL_MAX_MTU = netint.getMTU();
             }
-        System.out.println("Using max MTU of: "+ACTUAL_MAX_MTU);
+        }
+        System.out.println("Using max MTU of: " + ACTUAL_MAX_MTU);
     }
 
     public void run() {
         while (isListening.get()) {
             try {
                 serverSelector.select();
-                if (!serverKey.isValid()) {
-                    continue;
-                }
 
-                // Check what event is available and deal with it
-                if (serverKey.isReadable()) {
-                    readData(serverKey);
-                } else if (serverKey.isWritable()) {
-                    //We don't need to send data, so shut down this cpu ungry feature :-)
-                    serverKey.interestOps(serverKey.interestOps() ^ SelectionKey.OP_WRITE);
+                Set<SelectionKey> list = serverSelector.selectedKeys();
+                for (SelectionKey k : list) {
+                    if (!k.isValid()) {
+                        continue;
+                    }
+
+                    // Check what event is available and deal with it
+                    if (k.isReadable()) {
+                        readData();
+                    } else if (k.isWritable()) {
+                        if (k.equals(myKey)){
+                            //We don't need to send data, so shut down this cpu ungry feature :-)
+                            myKey.interestOps(myKey.interestOps() ^ SelectionKey.OP_WRITE);
+                        }else{
+                            Object obj=k.attachment();
+                            if (k != null){
+                                StreamWriter c = (StreamWriter)obj;
+                                c.flush();
+                            }
+                        }
+                    }
                 }
             } catch (IOException ex) {
                 Logger.getLogger(NetworkListener.class.getName()).log(Level.SEVERE, null, ex);
@@ -95,25 +109,25 @@ class NetworkListener implements Runnable {
         isListening.set(false);
     }
 
-    private void readData(SelectionKey serverKey) {
+    private void readData() {
         try {
             ByteBuffer input = ByteBuffer.allocate(ACTUAL_MAX_MTU);
             SocketAddress clientAddress = serverChannel.receive(input);
-            if (clientAddress==null){
+            if (clientAddress == null) {
                 //null sender, means no data read. return now
                 return;
             }
             input.flip();
-            System.out.println( "Reading data, data as integer:"+input.asIntBuffer().get()+" from: "+clientAddress+" size:"+input.limit() );
+            System.out.println("Reading data, data as integer:" + input.asIntBuffer().get() + " from: " + clientAddress + " size:" + input.limit());
 
-            synchronized(inputList){
-                ArrayList<ByteBuffer> client = inputList.get(clientAddress);
-                if (client==null){
+            synchronized (allClient) {
+                Client client = allClient.get(clientAddress);
+                if (client == null) {
                     client = acceptNewConnections(clientAddress);
                 }
-                if (client!=null){
-                    synchronized(client){
-                        client.add(input);
+                if (client != null) {
+                    synchronized (client) {
+                        client.elaborateDatagram(input);
                     }
                 }
             }
@@ -122,30 +136,26 @@ class NetworkListener implements Runnable {
         }
     }
 
-    private ArrayList<ByteBuffer> acceptNewConnections(SocketAddress clientAddress) {
-        System.out.println("New connection: "+clientAddress);
-        final ArrayList<ByteBuffer> buf = new ArrayList<ByteBuffer>();
+    private Client acceptNewConnections(SocketAddress clientAddress) {
+        System.out.println("New connection: " + clientAddress);
         Client temp;
-        try {
-            temp = new Client(clientAddress, buf);
-        } catch (IOException ex) {
-            Logger.getLogger(NetworkListener.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+            temp = new Client(clientAddress, serverSelector);
+        
 
-        synchronized(inputList){
-            inputList.put(clientAddress, buf);
-            synchronized(newClient){
+        synchronized (allClient) {
+            allClient.put(clientAddress, temp);
+            synchronized (newClient) {
                 newClient.add(temp);
             }
-            return buf;
         }
+        return temp;
     }
 
-    public LinkedList<Client> getAndRemoveWaitingClient(){
-        synchronized(newClient){
-            if (newClient.size()==0)
+    public LinkedList<Client> getAndRemoveWaitingClient() {
+        synchronized (newClient) {
+            if (newClient.size() == 0) {
                 return null;
+            }
             LinkedList<Client> tempNewClient = new LinkedList<Client>(newClient);
             newClient.clear();
             return tempNewClient;

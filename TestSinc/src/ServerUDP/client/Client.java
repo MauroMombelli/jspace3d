@@ -4,27 +4,43 @@
  */
 package ServerUDP.client;
 
-import java.io.IOException;
+import Shared.PayloadContainer;
+import Shared.payload.StringPayload;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.nio.channels.Selector;
 
 /**
  *
  * @author mauro
  */
 public class Client {
+    
+    private final PayloadContainer dataContainer;
 
-    private final ArrayList<ByteBuffer> input;
-    private final ClientWriter output;
-
-    public Client(SocketAddress address, ArrayList<ByteBuffer> input) throws IOException {
-        this.input = input;
-        output = new ClientWriter(address);
+    public Client(SocketAddress clientAddress, Selector serverSelector) {
+        dataContainer = new PayloadContainer(clientAddress, 5001, serverSelector);
     }
 
+    public void elaborateDatagram(ByteBuffer input) {
+        dataContainer.read(input);
+    }
+
+    public void writeData(){
+        dataContainer.flush();
+    }
+
+    public void echo() {
+        StringPayload echo;
+        while ( (echo=dataContainer.getString()) !=null){
+            System.out.println(echo);
+            dataContainer.addPayload(echo, Byte.MAX_VALUE);
+        }
+        
+        System.out.println("Invio Datagramma");
+        dataContainer.flush();
+    }
+/*
     int readedData = 0;
     public void echo() {
         synchronized (input) {
@@ -44,4 +60,5 @@ public class Client {
             }
         }
     }
+*/
 }
