@@ -6,10 +6,10 @@ package Shared;
 
 import Shared.payload.Payload;
 import Shared.payload.StringPayload;
+import java.io.IOException;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.TreeMap;
+import java.nio.channels.Selector;
 
 /**
  *
@@ -17,105 +17,41 @@ import java.util.TreeMap;
  */
 public class PayloadContainer {
 
-    byte numberOutput = 0;
-    DatagramHeader myHeader = new DatagramHeader(numberOutput, (byte) 0);
-    final LinkedList<Payload> dataOut = new LinkedList<Payload>();
-    final TreeMap<Integer, LinkedList<Payload>> dataIn = new TreeMap<Integer, LinkedList<Payload>>();
+    PayloadWriter writer;
+    PayloadReader reader = new PayloadReader();
+    
+    //DatagramHeader myHeader = new DatagramHeader(numberOutput, (byte) 0);
+    
     //TreeSet<Byte> missingDatagram = new TreeSet<Byte>();
-    long missingDatagram[] = new long[Byte.MAX_VALUE - Byte.MIN_VALUE];
-    final static int OK = 0;
-    byte numberInput = 0;
-
-    public PayloadContainer() {
-        for (int i = 0; i < Byte.MAX_VALUE - Byte.MIN_VALUE; i++) {
-            missingDatagram[i] = OK;
-        }
+    
+/*
+    public PayloadContainer(StreamWriter outputStream) {
+        writer  =new PayloadWriter(outputStream);
     }
-
-    public int write(ByteBuffer output, byte turn) {
-        int maxSize = output.remaining();
-
-        maxSize -= DatagramHeader.getSizeInByte();
-        if (maxSize < 0) {
-            return 0;
-        }
-        (new DatagramHeader(numberOutput, turn)).write(output);
+*/
+    public PayloadContainer(SocketAddress address, int port, Selector serverSelector) {
+        writer = new PayloadWriter(address, port, serverSelector);
         
-        int dataPutted = 0;
-        synchronized (dataOut) {
-            Payload actual = dataOut.poll();
-            while (actual != null) {
-                maxSize -= actual.getSizeInByte() + 1;
-                if (maxSize < 0) {
-                    break;
-                }
-                System.out.println("Writing " + (actual.getSizeInByte() + 1) + " byte, free:" + maxSize);
-                output.put(actual.getID());
-                actual.write(output);
-                dataPutted++;
-                actual = dataOut.poll();
-            }
-            if (actual != null) {
-                dataOut.addFirst(actual);
-            }
-        }
-        numberOutput++;
-        return dataPutted;
-    }
-    int missingDatagramNumber = 0;
-
-    public void read(ByteBuffer input) {
-        myHeader.read(input);
-
-        for (byte missing = numberInput; missing < myHeader.getNumber(); missing++) {//find all missing packet if there is no overflow
-            missingDatagram[missing - Byte.MIN_VALUE] = System.currentTimeMillis();
-            missingDatagramNumber++;
-        }
-
-
-
-        System.out.println("DatagramReceived: " + myHeader.getNumber() + " turn: " + myHeader.getTurn() + " lost: " + missingDatagramNumber);
-
-        synchronized (dataIn) {
-            while (input.remaining() > 0) {
-                int actionType = input.get();//read payload type
-                switch (actionType) {
-                    case 0:
-                        StringPayload p = new StringPayload("");
-                        p.read(input);
-                        LinkedList<Payload> data = dataIn.get(0);
-                        if (data == null) {
-                            data = new LinkedList<Payload>();
-                            dataIn.put(0, data);
-                        }
-                        data.add(p);
-                        break;
-                    default:
-                        System.out.println("No action with this ID!: " + actionType);
-                }
-            }
-        }
-        numberInput++;
-    }
-
-    public void add(Payload payload) {
-        synchronized (dataOut) {
-            dataOut.add(payload);
-        }
     }
 
     public StringPayload getString() {
-        synchronized (dataIn) {
-            LinkedList<Payload> arr = dataIn.get(0);
-            if (arr==null)
-                return null;
-            return (StringPayload) arr.poll();
+        Payload ris = reader.getPayload( StringPayload.dataID );
+        if ( ris != null ){
+            return (StringPayload)ris;
         }
+        return null;
     }
 
-    public boolean hasToWrite() {
-        synchronized (dataOut) {
-            return dataOut.size() > 0 ? true : false;
-        }
+    public void read(ByteBuffer input) {
+        reader.read(input);
     }
+
+    public void flush(){
+        writer.write();
+    }
+
+    public void addPayload(StringPayload echo, byte turn) {
+        writer.add(echo, turn);
+    }
+
 }
