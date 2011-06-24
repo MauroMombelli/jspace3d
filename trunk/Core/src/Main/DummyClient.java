@@ -1,54 +1,40 @@
 package Main;
 
+import com.ardor3d.framework.DisplaySettings;
+import com.ardor3d.renderer.lwjgl.LwjglContextCapabilities;
+import java.awt.GraphicsEnvironment;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.ContextCapabilities;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GLContext;
+import settings.GameSettingsManager;
+import utils.NativeLoader;
 
+public class DummyClient implements Observer {
 
-import gameCore.GameCore;
-import java.io.File;
+    static {
+    }
+    private final GameSettingsManager gameSettingsManager;
 
-import org.lwjgl.LWJGLUtil;
-import settings.GUI.components.SettingsDialog;
+    public DummyClient() {
+        gameSettingsManager = new GameSettingsManager("config.txt");
+        //blocking Call
+        gameSettingsManager.startUp();
 
-public class DummyClient {
+        System.out.println("Finished and current thread is: " + Thread.currentThread().getName());
+    }
 
-	static {
-		//File lwjglNativeFolder = new File(System.getProperty("user.dir"),
-		//		"TestSinc" + File.separator + "lib" + File.separator
-		//				+ "lwjgl-2.7.1" + File.separator + "native");
-            File lwjglNativeFolder = new File(System.getProperty("user.dir"),
-				".." + File.separator +"lib" + File.separator
-						+ "lwjgl-2.7.1" + File.separator + "native");
-		File thisSoNativeFolder = new File(lwjglNativeFolder,
-				LWJGLUtil.getPlatformName());
-		// LWJGLUtil.getPlatform()
+    public static void main(String[] args) {
+        NativeLoader.loadLwjglNatives();
+        DummyClient tmp = new DummyClient();
+    }
 
-		System.out.println(System.getProperties());
-
-		System.out.println("Loading native library from: "
-				+ thisSoNativeFolder.getAbsolutePath());
-		System.setProperty("org.lwjgl.librarypath",
-				thisSoNativeFolder.getAbsolutePath());
-
-	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		DummyClient main = new DummyClient();
-
-	}
-        
-	public DummyClient() {
-		GameCore gameCore = new GameCore();
-                SettingsDialog dialog = new SettingsDialog(new javax.swing.JFrame(), true);
-                dialog.setLocationRelativeTo(null);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.pack();
-                dialog.setVisible(true);
-	}
+    public void update(Observable o, Object arg) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

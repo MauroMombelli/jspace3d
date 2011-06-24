@@ -3,12 +3,15 @@
  * and open the template in the editor.
  */
 
-package gameCore.settings;
+package gameCore.players;
 
 /**
  *
  * @author Fra
  */
-public class SystemSettings {
+public class PlayerManager {
 
+    public void addPlayer(){
+
+    }
 }

@@ -10,27 +10,52 @@
  */
 package settings.GUI.components;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
+import com.ardor3d.renderer.lwjgl.LwjglContextCapabilities;
+import java.awt.Dimension;
+import java.awt.DisplayMode;
+import java.awt.GraphicsEnvironment;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import org.lwjgl.opengl.GLContext;
+import settings.GameSettings;
+import utils.Display.DisplayModeSorter;
 
 /**
  *
  * @author Fra
  */
-public class SettingsDialog extends javax.swing.JDialog {
+public class SettingsDialog extends JFrame {
 
     /** A return status code - returned if Cancel button has been pressed */
     public static final int RET_CANCEL = 0;
     /** A return status code - returned if OK button has been pressed */
     public static final int RET_OK = 1;
+    private Object[] resolutions;
+    private Object[] antialiases;
+    private GameSettings settings;
+    
+    public SettingsDialog(GameSettings gameSettings) {
+        this();
+        settings = gameSettings;
+        updateGUIFromSettings();
+    }
+
+    public String getScreenResolution() {
+        return (String) jComboBox1.getSelectedItem();
+    }
+
+    public boolean isFullScreenSelected(){
+        return jCheckBox1.isSelected();
+    }
 
     /** Creates new form SettingsDialog */
-    public SettingsDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public SettingsDialog() {
+        super();
+        getContextInformation();
         initComponents();
     }
 
@@ -89,10 +114,10 @@ public class SettingsDialog extends javax.swing.JDialog {
         jLabel1.setText("Resolution:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(12, 10, 0, 30);
+        gridBagConstraints.insets = new java.awt.Insets(12, 10, 0, 120);
         jPanel4.add(jLabel1, gridBagConstraints);
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.setModel(new DefaultComboBoxModel(resolutions));
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox1ActionPerformed(evt);
@@ -116,7 +141,7 @@ public class SettingsDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(12, 10, 0, 0);
         jPanel4.add(jLabel2, gridBagConstraints);
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox2.setModel(new DefaultComboBoxModel(antialiases));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -134,8 +159,8 @@ public class SettingsDialog extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(11, 0, 0, 10);
         jPanel4.add(jCheckBox1, gridBagConstraints);
 
-        jLabel3.setFont(new java.awt.Font("sansserif", 1, 12));
-        jLabel3.setText("Fullscreen");
+        jLabel3.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
+        jLabel3.setText("Force GUI on restart");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -173,6 +198,11 @@ public class SettingsDialog extends javax.swing.JDialog {
         jButton1.setMaximumSize(new java.awt.Dimension(200, 150));
         jButton1.setMinimumSize(new java.awt.Dimension(100, 80));
         jButton1.setPreferredSize(new java.awt.Dimension(100, 80));
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -203,6 +233,11 @@ public class SettingsDialog extends javax.swing.JDialog {
         // TODO add your handling code here:
 }//GEN-LAST:event_jComboBox1ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        updateSettingsFromGUI();
+        doClose(RET_OK);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     private void doClose(int retStatus) {
         returnStatus = retStatus;
         setVisible(false);
@@ -217,10 +252,11 @@ public class SettingsDialog extends javax.swing.JDialog {
 
             public void run() {
                 setDefaultLookAndFeelDecorated(true);
-                SettingsDialog dialog = new SettingsDialog(new javax.swing.JFrame(), true);
+                SettingsDialog dialog = new SettingsDialog();
                 dialog.setLocationRelativeTo(null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
 
+                    @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);
                     }
@@ -250,4 +286,78 @@ public class SettingsDialog extends javax.swing.JDialog {
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
     private int returnStatus = RET_CANCEL;
+
+    private void getContextInformation() {
+        //Get info on current context
+        DisplayMode modes[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayModes();
+        Arrays.sort(modes, new DisplayModeSorter());
+
+        final ArrayList<String> _resolutions = new ArrayList<String>(modes.length);
+
+        for (int i = 0; i < modes.length; i++) {
+            String string = modes[i].getWidth() + " x " + modes[i].getHeight();
+            if (!_resolutions.contains(string)) {
+                _resolutions.add(string);
+            }
+
+        }
+        resolutions = _resolutions.toArray();
+
+        antialiases = new Object[]{ "none", "2x" , "4x", "8x", "16x" };
+    }
+
+    private void updateGUIFromSettings() {
+        setResolution();
+        setAntialias();
+        setGUIBoolean();
+    }
+
+    private void updateSettingsFromGUI(){
+        settings.setResolution(resolutionFromString((String)jComboBox1.getSelectedItem()));
+        settings.setAntialias(antialiasFromString((String)jComboBox2.getSelectedItem()));
+        settings.setForceGUI(jCheckBox1.isSelected());
+    }
+
+    private void setResolution() {
+        for(int i = 0; i<jComboBox1.getItemCount(); i++){            
+            Dimension GUIDimension = resolutionFromString((String) jComboBox1.getItemAt(i));
+            if(settings.getResolution().equals(GUIDimension)){
+                jComboBox1.setSelectedIndex(i);
+                break;
+            }
+        }
+    }
+
+    private void setAntialias() {
+        for(int i = 0; i<jComboBox2.getItemCount(); i++){
+            int antialias = antialiasFromString((String)jComboBox2.getItemAt(i));
+            if(antialias == settings.getAntialias()){
+                jComboBox2.setSelectedIndex(i);
+                break;
+            }
+        }
+    }
+
+    private void setGUIBoolean() {
+        if(settings.isForceGUI())
+            jCheckBox1.setSelected(true);
+        else
+            jCheckBox1.setSelected(false);
+    }
+
+    private Dimension resolutionFromString(String resolutionStr) {
+            String widthStr = resolutionStr.split(" x ")[0];
+            String heightStr = resolutionStr.split(" x ")[1];
+            int width = Integer.parseInt(widthStr);
+            int height = Integer.parseInt(heightStr);
+            Dimension out = new Dimension(width,height);
+            return out;
+    }
+
+    private int antialiasFromString(String antialiasStr) {
+        if(antialiasStr.equals("none"))
+            return 0;
+        antialiasStr = antialiasStr.split("x")[0];
+        return Integer.parseInt(antialiasStr);
+    }
 }
